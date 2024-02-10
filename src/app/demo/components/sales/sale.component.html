@@ -1,0 +1,1144 @@
+<router-outlet></router-outlet>
+<div class="grid">
+    <div class="col-12">
+        <div class="card">
+            <div [style]="{ display: 'flex', alignItems: 'center' }">
+                <h5 [style]="{ margin: 'auto 0' }">{{ title }}</h5>
+
+                <div class="my-2" [style]="{ marginLeft: '10px' }">
+                    <button
+                        pButton
+                        pRipple
+                        label="Añadir"
+                        icon="pi pi-box"
+                        class="p-button-success mr-2"
+                        (click)="openNew()"
+                    ></button>
+                    <!-- <button
+                        pButton
+                        pRipple
+                        label="Delete"
+                        icon="pi pi-trash"
+                        class="p-button-danger"
+                        (click)="deleteSelectedProducts()"
+                        [disabled]="
+                            !selectedProducts || !selectedProducts.length
+                        "
+                    ></button> -->
+                </div>
+            </div>
+            <p-table
+                #dt1
+                [value]="sales"
+                dataKey="saleId"
+                [rows]="10"
+                [loading]="loading"
+                [rowHover]="true"
+                styleClass="p-datatable-gridlines"
+                [paginator]="true"
+                [globalFilterFields]="[
+                    'client.dni',
+                    'client.name',
+                    'client.surname',
+                    'client.phoneNumber',
+                    'guarantorDni',
+                    'guarantorName',
+                    'productDescription',
+                    'date'
+                ]"
+                responsiveLayout="scroll"
+            >
+                <ng-template pTemplate="caption">
+                    <div
+                        class="flex justify-content-between flex-column sm:flex-row"
+                    >
+                        <button
+                            pButton
+                            label="Limpiar filtros"
+                            class="p-button-outlined mb-2"
+                            icon="pi pi-filter-slash"
+                            (click)="clear(dt1)"
+                        ></button>
+                        <span class="p-input-icon-left mb-2">
+                            <i class="pi pi-search"></i>
+                            <input
+                                pInputText
+                                type="text"
+                                #filter
+                                (input)="onGlobalFilter(dt1, $event)"
+                                placeholder="{{ searchPlaceholder }}"
+                                class="w-full"
+                            />
+                        </span>
+                    </div>
+                </ng-template>
+
+                <!-- Headers -->
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="min-width: 12rem">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                Opt
+                            </div>
+                        </th>
+                        <th style="min-width: 8rem">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                Fecha
+                                <p-columnFilter
+                                    type="date"
+                                    display="menu"
+                                    field="date"
+                                    placeholder="Buscar por fecha"
+                                />
+                            </div>
+                        </th>
+                        <th style="min-width: 8rem">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                Cliente
+                                <p-columnFilter
+                                    type="text"
+                                    field="client?.name"
+                                    display="menu"
+                                    placeholder="Buscar por cliente"
+                                ></p-columnFilter>
+                            </div>
+                        </th>
+                        <th style="min-width: 8rem">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                Fecha de pago
+                            </div>
+                        </th>
+                        <th style="min-width: 8rem">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                Cambio de fecha
+                            </div>
+                        </th>
+                        <th style="min-width: 8rem">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                Descripción del producto
+                            </div>
+                        </th>
+                        <th style="min-width: 8rem">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                Cantidad
+                            </div>
+                        </th>
+                        <th style="min-width: 8rem">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                Cuota
+                            </div>
+                        </th>
+                        <th style="min-width: 8rem">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                Garante
+                                <p-columnFilter
+                                    type="text"
+                                    field="guarantorDni"
+                                    display="menu"
+                                    placeholder="Buscar por dni de garante"
+                                ></p-columnFilter>
+                            </div>
+                        </th>
+                        <th style="min-width: 8rem">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                Cuotas cobradas
+                            </div>
+                        </th>
+                        <th style="min-width: 8rem">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                Total de cuotas
+                            </div>
+                        </th>
+                        <th style="min-width: 8rem">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                Fechas cambiadas
+                            </div>
+                        </th>
+                    </tr>
+                </ng-template>
+
+                <!-- Body with all sales -->
+                <ng-template pTemplate="body" let-sale>
+                    <tr>
+                        <td
+                            style="
+                                display: flex;
+                                justify-content: center;
+                                flex-direction: row;
+                            "
+                        >
+                            <button
+                                title="Editar registro"
+                                pButton
+                                pRipple
+                                type="button"
+                                icon="pi pi-pencil"
+                                (click)="openEditSaleDialog(sale)"
+                                class="p-button-rounded p-button-primary p-button-outlined"
+                            ></button>
+                            <button
+                                title="Eliminar registro"
+                                style="margin-left: 5px"
+                                pButton
+                                pRipple
+                                type="button"
+                                icon="pi pi-trash"
+                                class="p-button-rounded p-button-danger p-button-outlined"
+                            ></button>
+                            <!-- Open for pay fee -->
+                            <button
+                                title="Marcar como cuota del mes pagada"
+                                style="margin-left: 5px"
+                                pButton
+                                pRipple
+                                (click)="
+                                    openPaymentDateDialog(
+                                        sale?.saleId,
+                                        sale?.client?.name
+                                    )
+                                "
+                                type="button"
+                                icon="pi pi-check"
+                                class="p-button-rounded p-button-success p-button-outlined"
+                            ></button>
+                            <div>
+                                <p-toast></p-toast>
+                                <p-confirmPopup
+                                    key="makeAsPaid"
+                                ></p-confirmPopup>
+                            </div>
+                            <!-- Open change payment date dialog -->
+                            <button
+                                title="Cambiar fecha de pago"
+                                style="margin-left: 5px"
+                                pButton
+                                pRipple
+                                (click)="
+                                    openChangePaymentDateDialog(sale?.saleId)
+                                "
+                                type="button"
+                                icon="pi pi-calendar-plus"
+                                class="p-button-rounded p-button-info p-button-outlined"
+                            ></button>
+                            <div>
+                                <p-toast></p-toast>
+                                <p-confirmPopup
+                                    key="changePaymentDate"
+                                ></p-confirmPopup>
+                            </div>
+                        </td>
+                        <td>
+                            {{ sale?.date | date : ["d/M/yy"] }}
+                        </td>
+                        <!-- See client -->
+                        <td
+                            style="
+                                display: flex;
+                                justify-content: center;
+                                flex-direction: row;
+                            "
+                        >
+                            <button
+                                pButton
+                                pRipple
+                                type="button"
+                                icon="pi pi-arrow-up-right"
+                                class="p-button-rounded p-button-success"
+                                id="{{ asset?.clientId }}"
+                                (click)="openForSeeClient(sale?.client)"
+                                title="Ver cliente"
+                            ></button>
+                        </td>
+                        <td>
+                            {{ sale?.paymentDate | date : ["d/M/yy"] }}
+                        </td>
+                        <td>
+                            {{ sale?.newPaymentDate | date : ["d/M/yy"] }}
+                        </td>
+                        <td>
+                            {{ sale?.productDescription }}
+                        </td>
+                        <td>
+                            {{ sale?.amount }}
+                        </td>
+                        <td>
+                            {{ sale?.fee }}
+                        </td>
+                        <!-- See Guarantor -->
+                        <td
+                            style="
+                                display: flex;
+                                justify-content: center;
+                                flex-direction: row;
+                            "
+                        >
+                            <button
+                                pButton
+                                pRipple
+                                type="button"
+                                icon="pi pi-arrow-up-right"
+                                class="p-button-rounded p-button-success"
+                                id="{{ asset?.clientId }}"
+                                (click)="
+                                    openForSeeGuarantor(
+                                        sale?.guarantorName,
+                                        sale?.guarantorDni,
+                                        sale?.guarantorAddress
+                                    )
+                                "
+                                title="Ver empleado"
+                            ></button>
+                        </td>
+                        <td>
+                            {{ sale?.feesCollected }}
+                        </td>
+                        <td>
+                            {{ sale?.totalFees }}
+                        </td>
+                        <!-- See paymentDateChanged -->
+                        <td
+                            style="
+                                display: flex;
+                                justify-content: center;
+                                flex-direction: row;
+                            "
+                        >
+                            <button
+                                pButton
+                                pRipple
+                                type="button"
+                                label="{{ sale?.timesThePaymentDateWasChanged }}"
+                                icon="pi pi-arrow-up-right"
+                                class="p-button-rounded p-button-success"
+                                (click)="
+                                    openForSeePaymentDateChanged(
+                                        sale?.listOfPaymentDatesThatAreChanged
+                                    )
+                                "
+                                title="Ver fechas de pago cambiadas"
+                            ></button>
+                        </td>
+                    </tr>
+                </ng-template>
+
+                <!-- Empty message -->
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="8">No se han registrado ventas.</td>
+                    </tr>
+                </ng-template>
+                <!-- Loading body -->
+                <ng-template pTemplate="loadingbody">
+                    <tr>
+                        <td colspan="8">
+                            Cargando registros. Por favor espere.
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+
+            <!-- Overview -->
+            <div class="col-12 xl:col-6">
+                <div class="card">
+                    <h5>{{ chartTitle }}</h5>
+                    <p-chart
+                        type="line"
+                        [data]="employeeCollection"
+                        [options]="chartOptions"
+                    ></p-chart>
+                </div>
+            </div>
+
+            <!-- New sale -->
+            <p-dialog
+                [(visible)]="dialog"
+                [style]="{ width: '450px' }"
+                header="Añadir venta"
+                [modal]="true"
+                class="p-fluid"
+            >
+                <ng-template pTemplate="content">
+                    <!-- Employee Dni -->
+                    <div class="field">
+                        <label for="dni">Dni empleado</label>
+                        <input
+                            type="number"
+                            pInputText
+                            id="dni"
+                            [(ngModel)]="saleDto.employeeDni"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !saleDto.employeeDni
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !saleDto.employeeDni"
+                            >El dni es requerido.</small
+                        >
+                    </div>
+                    <!-- Client Dni -->
+                    <div class="field">
+                        <label for="cdni">Dni cliente</label>
+                        <input
+                            type="number"
+                            pInputText
+                            id="cdni"
+                            [(ngModel)]="saleDto.clientDni"
+                            (ngModelChange)="existCustomer(saleDto.clientDni)"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !saleDto.clientDni
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="!existCustomerBool"
+                            style="color: red"
+                            >{{ this.existCustomerMsg }}</small
+                        >
+                        <button
+                            pButton
+                            label="Añadir cliente"
+                            icon="pi pi-user-plus"
+                            class="p-button-outlined mr-2"
+                            style="margin-top: 2px"
+                            (click)="openForAddCustomer()"
+                        ></button>
+                    </div>
+                    <!-- Guarantor Dni -->
+                    <div class="field">
+                        <label for="gdni">Dni garante</label>
+                        <input
+                            type="number"
+                            pInputText
+                            id="gdni"
+                            [(ngModel)]="saleDto.guarantorDni"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !saleDto.guarantorDni
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !saleDto.guarantorDni"
+                            >El dni es requerido.</small
+                        >
+                    </div>
+                    <!-- Guarantor Name -->
+                    <div class="field">
+                        <label for="gname">Nombre garante</label>
+                        <input
+                            type="text"
+                            pInputText
+                            id="gname"
+                            [(ngModel)]="saleDto.guarantorName"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !saleDto.guarantorName
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !saleDto.guarantorName"
+                            >El nombre es requerido.</small
+                        >
+                    </div>
+                    <!-- Guarantor Address -->
+                    <div class="field">
+                        <label for="gaddress">Dirección garante</label>
+                        <input
+                            type="text"
+                            pInputText
+                            id="gaddress"
+                            [(ngModel)]="saleDto.guarantorAddress"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !saleDto.guarantorAddress
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !saleDto.guarantorAddress"
+                            >La dirección es requerida.</small
+                        >
+                    </div>
+                    <!-- Product description -->
+                    <div class="field">
+                        <label for="productDesc">Descripción de producto</label>
+                        <input
+                            type="text"
+                            pInputText
+                            id="productDesc"
+                            [(ngModel)]="saleDto.productDescription"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !saleDto.productDescription
+                            }"
+                        />
+                    </div>
+                    <!-- Amount -->
+                    <div class="field">
+                        <label for="amount">Cantidad</label>
+                        <input
+                            type="number"
+                            pInputText
+                            id="amount"
+                            [(ngModel)]="saleDto.amount"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !saleDto.amount
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !saleDto.amount"
+                            >El monto es requerido.</small
+                        >
+                    </div>
+                    <!-- Fee -->
+                    <div class="field">
+                        <label for="amount">Cuota</label>
+                        <input
+                            type="number"
+                            pInputText
+                            id="amount"
+                            [(ngModel)]="saleDto.fee"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty': submitted && !saleDto.fee
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !saleDto.fee"
+                            >La cuota es requerida.</small
+                        >
+                    </div>
+                    <!-- Total fees -->
+                    <div class="field">
+                        <label for="amount">Cantidad de cuotas en total</label>
+                        <input
+                            type="number"
+                            pInputText
+                            id="amount"
+                            [(ngModel)]="saleDto.totalFees"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !saleDto.totalFees
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !saleDto.totalFees"
+                            >El totalFees es requerido.</small
+                        >
+                    </div>
+                    <!-- Fees collected -->
+                    <div class="field">
+                        <label for="amount">Cuotas cobradas</label>
+                        <input
+                            type="number"
+                            pInputText
+                            id="amount"
+                            [(ngModel)]="saleDto.feesCollected"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !saleDto.feesCollected
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !saleDto.feesCollected"
+                            >El feesCollected es requerido.</small
+                        >
+                    </div>
+                    <!-- PaymentDate -->
+                    <div class="field">
+                        <label for="PaymentDate">Fecha de pago</label>
+                        <p-calendar
+                            [showIcon]="true"
+                            [locale]="demo?.es"
+                            inputId="icon"
+                            [(ngModel)]="saleDto.paymentDate"
+                            [showTime]="true"
+                            [inline]="true"
+                        ></p-calendar>
+                    </div>
+                    <!-- Date -->
+                    <div class="field">
+                        <label for="date">Fecha</label>
+                        <p-calendar
+                            [showIcon]="true"
+                            [locale]="demo?.es"
+                            inputId="icon"
+                            [(ngModel)]="saleDto.date"
+                            [showTime]="true"
+                            [inline]="true"
+                        ></p-calendar>
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !saleDto.date"
+                            >La fecha es requerida.</small
+                        >
+                    </div>
+                </ng-template>
+
+                <ng-template pTemplate="footer">
+                    <button
+                        pButton
+                        pRipple
+                        label="Cancelar"
+                        icon="pi pi-times"
+                        class="p-button-text"
+                        (click)="hideDialog()"
+                    ></button>
+                    <button
+                        pButton
+                        pRipple
+                        label="Guardar"
+                        icon="pi pi-check"
+                        class="p-button-text"
+                        (click)="saveProduct()"
+                    ></button>
+                </ng-template>
+            </p-dialog>
+
+            <!-- Ver lista de fechas cambiadas -->
+            <p-dialog
+                [(visible)]="dialogForSeePaymentDateChanged"
+                [style]="{ width: '450px' }"
+                header="Fechas de pago cambiadas"
+                [modal]="true"
+                class="p-fluid"
+            >
+                <ng-template pTemplate="content">
+                    <div class="field">
+                        <input
+                            *ngFor="let item of paymentDateChanged"
+                            style="margin-top: 5px"
+                            type="text"
+                            pInputText
+                            placeholder="{{ item | date : ['d/M/yy'] }}"
+                            readonly
+                        />
+                    </div>
+                </ng-template>
+                <!-- Footer -->
+                <ng-template pTemplate="footer">
+                    <button
+                        pButton
+                        pRipple
+                        label="Realizado"
+                        icon="pi pi-check"
+                        class="p-button-text"
+                        (click)="hideChangePaymentDateDialog()"
+                    ></button>
+                </ng-template>
+            </p-dialog>
+
+            <!-- Ver producto -->
+            <p-dialog
+                [(visible)]="dialogForSeeProduct"
+                [style]="{ width: '450px' }"
+                header="Venta | {{ product?.productName }}"
+                [modal]="true"
+                class="p-fluid"
+            >
+                <ng-template pTemplate="content">
+                    <div class="field">
+                        <label for="bcode">Código</label>
+                        <input
+                            id="bcode"
+                            type="text"
+                            pInputText
+                            placeholder="{{ product?.barcode }}"
+                            readonly
+                        />
+                    </div>
+                    <div class="field">
+                        <label for="categoryP">Categoría</label>
+                        <input
+                            id="categoryP"
+                            type="text"
+                            pInputText
+                            placeholder="{{ product?.category }}"
+                            readonly
+                        />
+                    </div>
+                    <div class="field">
+                        <label for="spotP">Precio al contado</label>
+                        <input
+                            id="spotP"
+                            type="text"
+                            pInputText
+                            placeholder="{{ product?.spotPrice }}"
+                            readonly
+                        />
+                    </div>
+                    <div class="field">
+                        <label for="installmentP">Precio por cuota</label>
+                        <input
+                            id="installmentP"
+                            type="text"
+                            pInputText
+                            placeholder="{{ product?.installmentPrice }}"
+                            readonly
+                        />
+                    </div>
+                    <div class="field">
+                        <label for="totalFeesP">Cantidad de cuotas</label>
+                        <input
+                            id="totalFeesP"
+                            type="text"
+                            pInputText
+                            placeholder="{{ product?.totalFees }}"
+                            readonly
+                        />
+                    </div>
+                    <div class="field">
+                        <label for="stockP">stock</label>
+                        <input
+                            id="stockP"
+                            type="text"
+                            pInputText
+                            placeholder="{{ product?.stock }}"
+                            readonly
+                        />
+                    </div>
+                    <div class="field">
+                        <label for="descP">Descripción</label>
+                        <input
+                            id="descP"
+                            type="text"
+                            pInputText
+                            placeholder="{{ product?.description }}"
+                            readonly
+                        />
+                    </div>
+                </ng-template>
+                <!-- Footer -->
+                <ng-template pTemplate="footer">
+                    <button
+                        pButton
+                        pRipple
+                        label="Realizado"
+                        icon="pi pi-check"
+                        class="p-button-text"
+                        (click)="hideDialogForSeeProduct()"
+                    ></button>
+                </ng-template>
+            </p-dialog>
+
+            <!-- Ver cliente -->
+            <p-dialog
+                [(visible)]="dialogForSeeClient"
+                [style]="{ width: '450px' }"
+                header="Cliente | {{ customer?.name }}"
+                [modal]="true"
+                class="p-fluid"
+            >
+                <ng-template pTemplate="content">
+                    <div class="field">
+                        <label for="cname">Cliente</label>
+                        <input
+                            id="cname"
+                            type="text"
+                            pInputText
+                            placeholder="{{ customer?.name }}"
+                            readonly
+                        />
+                    </div>
+                    <div class="field">
+                        <label for="csurname">Apellido</label>
+                        <input
+                            id="csurname"
+                            type="text"
+                            pInputText
+                            placeholder="{{ customer?.surname }}"
+                            readonly
+                        />
+                    </div>
+                    <div class="field">
+                        <label for="cdni">Dni</label>
+                        <input
+                            id="cdni"
+                            type="text"
+                            pInputText
+                            placeholder="{{ customer?.dni }}"
+                            readonly
+                        />
+                    </div>
+                    <div class="field">
+                        <label for="cphone">Teléfono</label>
+                        <input
+                            id="cphone"
+                            type="text"
+                            pInputText
+                            placeholder="{{ customer?.phoneNumber }}"
+                            readonly
+                        />
+                    </div>
+                    <div class="field">
+                        <label for="caddress">Dirección</label>
+                        <input
+                            type="text"
+                            pInputText
+                            placeholder="{{ customer?.address }}"
+                            readonly
+                        />
+                    </div>
+                    <div class="field">
+                        <label for="cemail">Correo</label>
+                        <input
+                            id="cemail"
+                            type="text"
+                            pInputText
+                            placeholder="{{ customer?.email }}"
+                            readonly
+                        />
+                    </div>
+                </ng-template>
+                <!-- Footer -->
+                <ng-template pTemplate="footer">
+                    <button
+                        pButton
+                        pRipple
+                        label="Realizado"
+                        icon="pi pi-check"
+                        class="p-button-text"
+                        (click)="hideDialogForSeeClient()"
+                    ></button>
+                </ng-template>
+            </p-dialog>
+
+            <!-- Save customer -->
+            <p-dialog
+                [(visible)]="dialogForSaveCustomer"
+                [style]="{ width: '450px' }"
+                header="Añadir cliente"
+                [modal]="true"
+                class="p-fluid"
+            >
+                <ng-template pTemplate="content">
+                    <!-- Name -->
+                    <div class="field">
+                        <label for="name">Nombre</label>
+                        <input
+                            type="text"
+                            pInputText
+                            id="name"
+                            [(ngModel)]="addCustomer.name"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !addCustomer.name
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !addCustomer.name"
+                            >El nombre es requerido.</small
+                        >
+                    </div>
+                    <!-- Surname -->
+                    <div class="field">
+                        <label for="surname">Apellido</label>
+                        <input
+                            type="text"
+                            pInputText
+                            id="surname"
+                            [(ngModel)]="addCustomer.surname"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !addCustomer.surname
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !addCustomer.surname"
+                            >El apellido es requerido.</small
+                        >
+                    </div>
+                    <!-- Dni -->
+                    <div class="field">
+                        <label for="dni">Dni</label>
+                        <input
+                            type="number"
+                            pInputText
+                            id="dni"
+                            [(ngModel)]="addCustomer.dni"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !addCustomer.dni
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !addCustomer.dni"
+                            >El dni es requerido.</small
+                        >
+                    </div>
+                    <!-- phoneNumber -->
+                    <div class="field">
+                        <label for="phoneNumber">Celular</label>
+                        <input
+                            type="number"
+                            pInputText
+                            id="phoneNumber"
+                            [(ngModel)]="addCustomer.phoneNumber"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !addCustomer.phoneNumber
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !addCustomer.phoneNumber"
+                            >El celular es requerido.</small
+                        >
+                    </div>
+                    <!-- address -->
+                    <div class="field">
+                        <label for="address">Dirección</label>
+                        <input
+                            type="text"
+                            pInputText
+                            id="address"
+                            [(ngModel)]="addCustomer.address"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !addCustomer.address
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !addCustomer.address"
+                            >La dirección es requerido.</small
+                        >
+                    </div>
+                </ng-template>
+
+                <ng-template pTemplate="footer">
+                    <button
+                        pButton
+                        pRipple
+                        label="Cancelar"
+                        icon="pi pi-times"
+                        class="p-button-text"
+                        (click)="hideDialogForAddCustomer()"
+                    ></button>
+                    <button
+                        pButton
+                        pRipple
+                        label="Guardar"
+                        icon="pi pi-check"
+                        class="p-button-text"
+                        (click)="saveCustomer()"
+                    ></button>
+                </ng-template>
+            </p-dialog>
+
+            <!-- Ver garante -->
+            <p-dialog
+                [(visible)]="dialogForSeeGuarantor"
+                [style]="{ width: '450px' }"
+                header="Garante | {{ sale?.guarantorName }}"
+                [modal]="true"
+                class="p-fluid"
+            >
+                <ng-template pTemplate="content">
+                    <div class="field">
+                        <label for="gname">Garante</label>
+                        <input
+                            id="gname"
+                            type="text"
+                            pInputText
+                            placeholder="{{ sale?.guarantorName }}"
+                            readonly
+                        />
+                    </div>
+                    <div class="field">
+                        <label for="dniguarnator">Dni</label>
+                        <input
+                            id="dniguarnator"
+                            type="text"
+                            pInputText
+                            placeholder="{{ sale?.guarantorDni }}"
+                            readonly
+                        />
+                    </div>
+                    <div class="field">
+                        <label for="addressG">Dirección</label>
+                        <input
+                            id="addressG"
+                            type="text"
+                            pInputText
+                            placeholder="{{ sale?.guarantorAddress }}"
+                            readonly
+                        />
+                    </div>
+                </ng-template>
+                <!-- Footer -->
+                <ng-template pTemplate="footer">
+                    <button
+                        pButton
+                        pRipple
+                        label="Realizado"
+                        icon="pi pi-check"
+                        class="p-button-text"
+                        (click)="hideDialogForSeeGuarantor()"
+                    ></button>
+                </ng-template>
+            </p-dialog>
+
+            <!-- Cambiar fecha -->
+            <p-dialog
+                [(visible)]="dialogForChangePaymentDate"
+                [style]="{ width: '450px' }"
+                header="Cambio de fecha"
+                [modal]="true"
+                class="p-fluid"
+            >
+                <ng-template pTemplate="content">
+                    <div class="field">
+                        <label for="ChangePaymentDate"
+                            >Nueva fecha de pago</label
+                        >
+                        <p-calendar
+                            [showIcon]="true"
+                            inputId="ChangePaymentDate"
+                            [(ngModel)]="newPaymentDate.date"
+                            [showTime]="true"
+                            [inline]="true"
+                        ></p-calendar>
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !newPaymentDate.date"
+                            >La fecha es requerida.</small
+                        >
+                    </div>
+                </ng-template>
+                <!-- Footer -->
+                <ng-template pTemplate="footer">
+                    <button
+                        pButton
+                        pRipple
+                        label="Cancelar"
+                        icon="pi pi-times"
+                        class="p-button-text"
+                        (click)="hideChangePaymentDateDialog()"
+                    ></button>
+                    <button
+                        pButton
+                        pRipple
+                        label="Guardar"
+                        icon="pi pi-check"
+                        class="p-button-text"
+                        (click)="changePaymentDate($event)"
+                    ></button>
+                </ng-template>
+            </p-dialog>
+
+            <!-- Pagar cuota -->
+            <p-dialog
+                [(visible)]="dialogForPaymentDate"
+                [style]="{ width: '450px' }"
+                header="Elegir siguiente fecha de pago"
+                [modal]="true"
+                class="p-fluid"
+            >
+                <ng-template pTemplate="content">
+                    <div class="field">
+                        <label for="nextPaymentDate"
+                            >Siguiente fecha de pago</label
+                        >
+                        <p-calendar
+                            [showIcon]="true"
+                            inputId="nextPaymentDate"
+                            [(ngModel)]="nextPaymentDate.date"
+                            [showTime]="true"
+                            [inline]="true"
+                        ></p-calendar>
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !nextPaymentDate.date"
+                            >La fecha es requerida.</small
+                        >
+                    </div>
+                </ng-template>
+                <!-- Footer -->
+                <ng-template pTemplate="footer">
+                    <button
+                        pButton
+                        pRipple
+                        label="Cancelar"
+                        icon="pi pi-times"
+                        class="p-button-text"
+                        (click)="hidePaymentDateDialog()"
+                    ></button>
+                    <button
+                        pButton
+                        pRipple
+                        label="Guardar"
+                        icon="pi pi-check"
+                        class="p-button-text"
+                        (click)="makeAsPaid($event)"
+                    ></button>
+                </ng-template>
+            </p-dialog>
+        </div>
+    </div>
+</div>

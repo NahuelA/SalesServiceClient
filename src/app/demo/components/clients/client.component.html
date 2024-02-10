@@ -1,0 +1,351 @@
+<div class="grid">
+    <div class="col-12">
+        <div class="card">
+            <p-toast></p-toast>
+            <div [style]="{ display: 'flex', alignItems: 'center' }">
+                <h5 [style]="{ margin: 'auto 0' }">{{ title }}</h5>
+
+                <div class="my-2" [style]="{ marginLeft: '10px' }">
+                    <button
+                        pButton
+                        pRipple
+                        label="Añadir"
+                        icon="pi pi-user-plus"
+                        class="p-button-success mr-2"
+                        (click)="openNew()"
+                    ></button>
+                    <!-- <button
+                        pButton
+                        pRipple
+                        label="Delete"
+                        icon="pi pi-trash"
+                        class="p-button-danger"
+                        (click)="deleteSelectedProducts()"
+                        [disabled]="
+                            !selectedProducts || !selectedProducts.length
+                        "
+                    ></button> -->
+                </div>
+            </div>
+            <p-table
+                #dt1
+                [value]="customers"
+                dataKey="customerId"
+                [rows]="10"
+                [loading]="loading"
+                [rowHover]="true"
+                styleClass="p-datatable-gridlines"
+                [paginator]="true"
+                [globalFilterFields]="[
+                    'name',
+                    'dni',
+                    'surname',
+                    'address',
+                    'phoneNumber'
+                ]"
+                responsiveLayout="scroll"
+            >
+                <ng-template pTemplate="caption">
+                    <div
+                        class="flex justify-content-between flex-column sm:flex-row"
+                    >
+                        <button
+                            pButton
+                            label="Limpiar filtros"
+                            class="p-button-outlined mb-2"
+                            icon="pi pi-filter-slash"
+                            (click)="clear(dt1)"
+                        ></button>
+                        <span class="p-input-icon-left mb-2">
+                            <i class="pi pi-search"></i>
+                            <input
+                                pInputText
+                                type="text"
+                                #filter
+                                (input)="onGlobalFilter(dt1, $event)"
+                                placeholder="{{ searchPlaceholder }}"
+                                class="w-full"
+                            />
+                        </span>
+                    </div>
+                </ng-template>
+
+                <!-- Headers -->
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="min-width: 8rem">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                Opt
+                            </div>
+                        </th>
+                        <th style="min-width: 8rem">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                Dni
+                                <p-columnFilter
+                                    type="number"
+                                    field="dni"
+                                    display="menu"
+                                    placeholder="Buscar por dni"
+                                ></p-columnFilter>
+                            </div>
+                        </th>
+                        <th style="min-width: 12rem">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                Nombre
+                                <p-columnFilter
+                                    type="text"
+                                    field="name"
+                                    display="menu"
+                                    placeholder="Buscar por cliente"
+                                ></p-columnFilter>
+                            </div>
+                        </th>
+                        <th style="min-width: 14rem">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                Apellido
+                                <p-columnFilter
+                                    type="text"
+                                    field="surname"
+                                    display="menu"
+                                    placeholder="Buscar por apellido"
+                                ></p-columnFilter>
+                            </div>
+                        </th>
+                        <th style="min-width: 10rem">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                Celular
+                                <p-columnFilter
+                                    type="numeric"
+                                    field="phoneNumber"
+                                    display="menu"
+                                    placeholder="Celular"
+                                ></p-columnFilter>
+                            </div>
+                        </th>
+                        <th style="min-width: 12rem">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                Dirección
+                                <p-columnFilter
+                                    field="address"
+                                    matchMode="startsWith"
+                                    display="menu"
+                                    placeholder="Dirección"
+                                >
+                                </p-columnFilter>
+                            </div>
+                        </th>
+                    </tr>
+                </ng-template>
+
+                <!-- Body with all customers -->
+                <ng-template pTemplate="body" let-customer>
+                    <tr>
+                        <td
+                            style="
+                                display: flex;
+                                justify-content: center;
+                                flex-direction: row;
+                            "
+                        >
+                            <button
+                                title="Editar registro"
+                                pButton
+                                pRipple
+                                type="button"
+                                icon="pi pi-pencil"
+                                class="p-button-rounded p-button-primary p-button-outlined"
+                            ></button>
+                            <button
+                                title="Eliminar registro"
+                                style="margin-left: 5px"
+                                pButton
+                                pRipple
+                                type="button"
+                                icon="pi pi-trash"
+                                class="p-button-rounded p-button-danger p-button-outlined"
+                            ></button>
+                        </td>
+                        <td>
+                            {{ customer.dni }}
+                        </td>
+                        <td>
+                            {{ customer.name }}
+                        </td>
+                        <td>
+                            {{ customer.surname }}
+                        </td>
+                        <td>
+                            {{ customer.phoneNumber }}
+                        </td>
+                        <td>
+                            {{ customer.address }}
+                        </td>
+                    </tr>
+                </ng-template>
+
+                <!-- Empty message -->
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="8">No se han registrado clientes.</td>
+                    </tr>
+                </ng-template>
+                <!-- Loading body -->
+                <ng-template pTemplate="loadingbody">
+                    <tr>
+                        <td colspan="8">
+                            Cargando registros. Por favor espere.
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+
+            <!-- Save customer -->
+            <p-dialog
+                [(visible)]="dialog"
+                [style]="{ width: '450px' }"
+                header="Añadir cliente"
+                [modal]="true"
+                class="p-fluid"
+            >
+                <ng-template pTemplate="content">
+                    <!-- Name -->
+                    <div class="field">
+                        <label for="name">Nombre</label>
+                        <input
+                            type="text"
+                            pInputText
+                            id="name"
+                            [(ngModel)]="customer.name"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !customer.name
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !customer.name"
+                            >El nombre es requerido.</small
+                        >
+                    </div>
+                    <!-- Surname -->
+                    <div class="field">
+                        <label for="surname">Apellido</label>
+                        <input
+                            type="text"
+                            pInputText
+                            id="surname"
+                            [(ngModel)]="customer.surname"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !customer.surname
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !customer.surname"
+                            >El apellido es requerido.</small
+                        >
+                    </div>
+                    <!-- Dni -->
+                    <div class="field">
+                        <label for="dni">Dni</label>
+                        <input
+                            type="number"
+                            pInputText
+                            id="dni"
+                            [(ngModel)]="customer.dni"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !customer.dni
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !customer.dni"
+                            >El dni es requerido.</small
+                        >
+                    </div>
+                    <!-- phoneNumber -->
+                    <div class="field">
+                        <label for="phoneNumber">Celular</label>
+                        <input
+                            type="number"
+                            pInputText
+                            id="phoneNumber"
+                            [(ngModel)]="customer.phoneNumber"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !customer.phoneNumber
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !customer.phoneNumber"
+                            >El celular es requerido.</small
+                        >
+                    </div>
+                    <!-- address -->
+                    <div class="field">
+                        <label for="address">Dirección</label>
+                        <input
+                            type="text"
+                            pInputText
+                            id="address"
+                            [(ngModel)]="customer.address"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !customer.address
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !customer.address"
+                            >La dirección es requerido.</small
+                        >
+                    </div>
+                </ng-template>
+
+                <ng-template pTemplate="footer">
+                    <button
+                        pButton
+                        pRipple
+                        label="Cancelar"
+                        icon="pi pi-times"
+                        class="p-button-text"
+                        (click)="hideDialog()"
+                    ></button>
+                    <button
+                        pButton
+                        pRipple
+                        label="Guardar"
+                        icon="pi pi-check"
+                        class="p-button-text"
+                        (click)="saveProduct()"
+                    ></button>
+                </ng-template>
+            </p-dialog>
+        </div>
+    </div>
+</div>
