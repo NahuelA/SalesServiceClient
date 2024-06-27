@@ -2,11 +2,11 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { SaleDto } from "../contracts/Dtos/saleDto";
 import { CustomResponse } from "../contracts/response";
-import { Observable, Subject, tap } from "rxjs";
+import { Observable, Subject } from "rxjs";
+import { prodApi } from "src/app/layout/urlservice";
 
 @Injectable()
 export class SaleService {
-    mainUri: string = "http://localhost:5117/api/";
     private _refresh$ = new Subject<void>();
 
     constructor(private http: HttpClient) {}
@@ -16,7 +16,7 @@ export class SaleService {
     }
 
     get(limit: number): Observable<CustomResponse> {
-        const sale = this.http.get<CustomResponse>(`${this.mainUri}sale`);
+        const sale = this.http.get<CustomResponse>(`${prodApi}sale`);
         return sale;
     }
 
@@ -24,36 +24,35 @@ export class SaleService {
         let sale: any;
 
         if (dni === 0) {
-            sale = this.http.get<CustomResponse>(`${this.mainUri}sale`);
+            sale = this.http.get<CustomResponse>(`${prodApi}sale`);
             return sale;
         }
 
         sale = this.http.get<CustomResponse>(
-            `${this.mainUri}sale/filterByEmployees/${dni}`
+            `${prodApi}sale/filterByEmployees/${dni}`
         );
         return sale;
     }
 
     add(sale: SaleDto): Observable<CustomResponse> {
-        const newSale = this.http
-            .post<CustomResponse>(`${this.mainUri}sale`, sale)
-            ?.pipe(
-                tap(() => {
-                    this._refresh$.next();
-                })
-            );
+        const newSale = this.http.post<CustomResponse>(`${prodApi}sale`, sale);
 
         return newSale;
     }
 
+    delete(id): Observable<CustomResponse> {
+        const remove = this.http.delete<CustomResponse>(
+            `${prodApi}sale/${id}/?IsConfirmedDelete=true`
+        );
+
+        return remove;
+    }
+
     update(sale: SaleDto, id: number): Observable<CustomResponse> {
-        const newSale = this.http
-            .put<CustomResponse>(`${this.mainUri}sale/${id}`, sale)
-            ?.pipe(
-                tap(() => {
-                    this._refresh$.next();
-                })
-            );
+        const newSale = this.http.put<CustomResponse>(
+            `${prodApi}sale/${id}`,
+            sale
+        );
 
         return newSale;
     }
@@ -62,16 +61,10 @@ export class SaleService {
         id: number,
         nextPaymentDate: Date | string
     ): Observable<CustomResponse> {
-        const markAsPaid = this.http
-            .put<CustomResponse>(
-                `${this.mainUri}sale/markAsPaid/${id}`,
-                nextPaymentDate
-            )
-            ?.pipe(
-                tap(() => {
-                    this._refresh$.next();
-                })
-            );
+        const markAsPaid = this.http.put<CustomResponse>(
+            `${prodApi}sale/markAsPaid/${id}`,
+            nextPaymentDate
+        );
 
         return markAsPaid;
     }
@@ -80,16 +73,10 @@ export class SaleService {
         id: number,
         date: Date | string
     ): Observable<CustomResponse> {
-        const changePaymentDate = this.http
-            .put<CustomResponse>(
-                `${this.mainUri}sale/changePaymentDate/${id}`,
-                date
-            )
-            ?.pipe(
-                tap(() => {
-                    this._refresh$.next();
-                })
-            );
+        const changePaymentDate = this.http.put<CustomResponse>(
+            `${prodApi}sale/changePaymentDate/${id}`,
+            date
+        );
         return changePaymentDate;
     }
 }

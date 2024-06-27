@@ -178,6 +178,7 @@
                                 pRipple
                                 type="button"
                                 icon="pi pi-pencil"
+                                (click)="openUpdateDialog(employee)"
                                 class="p-button-rounded p-button-primary p-button-outlined"
                             ></button>
                             <button
@@ -187,6 +188,7 @@
                                 pRipple
                                 type="button"
                                 icon="pi pi-trash"
+                                (click)="openDeleteDialog(employee)"
                                 class="p-button-rounded p-button-danger p-button-outlined"
                             ></button>
                         </td>
@@ -410,6 +412,232 @@
                         icon="pi pi-check"
                         class="p-button-text"
                         (click)="saveProduct()"
+                    ></button>
+                </ng-template>
+            </p-dialog>
+
+            <!-- Update employee -->
+            <p-dialog
+                [(visible)]="updateDialog"
+                [style]="{ width: '450px' }"
+                header="Actualizar empleado"
+                [modal]="true"
+                class="p-fluid"
+            >
+                <ng-template pTemplate="content">
+                    <!-- Name -->
+                    <div class="field">
+                        <label for="name">Nombre</label>
+                        <input
+                            type="text"
+                            pInputText
+                            id="name"
+                            [(ngModel)]="employee.name"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !employee.name
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !employee.name"
+                            >El nombre es requerido.</small
+                        >
+                    </div>
+
+                    <!-- Surname -->
+                    <div class="field">
+                        <label for="surname">Apellido</label>
+                        <input
+                            type="text"
+                            pInputText
+                            id="surname"
+                            [(ngModel)]="employee.surname"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !employee.surname
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !employee.surname"
+                            >El apellido es requerido.</small
+                        >
+                    </div>
+
+                    <!-- Dni -->
+                    <div class="field">
+                        <label for="dni">Dni</label>
+                        <input
+                            type="number"
+                            pInputText
+                            id="dni"
+                            [(ngModel)]="employee.dni"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !employee.dni
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !employee.dni"
+                            >El dni es requerido.</small
+                        >
+                    </div>
+
+                    <!-- Cuil -->
+                    <div class="field">
+                        <label for="cuil">Cuil</label>
+                        <input
+                            type="number"
+                            pInputText
+                            id="cuil"
+                            [(ngModel)]="employee.cuil"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !employee.cuil
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !employee.cuil"
+                            >El cuil es requerido.</small
+                        >
+                    </div>
+
+                    <!-- Sector -->
+                    <div class="field">
+                        <label for="status">Sector</label>
+                        <p-dropdown
+                            [(ngModel)]="employee.sector"
+                            inputId="inventoryStatus"
+                            optionValue="label"
+                            [options]="sector"
+                            placeholder="Select"
+                        >
+                            <ng-template pTemplate="selectedItem">
+                                <span
+                                    *ngIf="employee && employee.sector"
+                                    [class]="
+                                        'product-badge status-' +
+                                        employee.sector.toString().toUpperCase()
+                                    "
+                                    >{{ employee.sector }}</span
+                                >
+                            </ng-template>
+                            <ng-template let-option pTemplate="item">
+                                <span
+                                    [class]="
+                                        'product-badge status-' + option.value
+                                    "
+                                    >{{ option.label }}</span
+                                >
+                            </ng-template>
+                        </p-dropdown>
+                    </div>
+
+                    <!-- phoneNumber -->
+                    <div class="field">
+                        <label for="phoneNumber">Celular</label>
+                        <input
+                            type="number"
+                            pInputText
+                            id="phoneNumber"
+                            [(ngModel)]="employee.phoneNumber"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !employee.phoneNumber
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !employee.phoneNumber"
+                            >El celular es requerido.</small
+                        >
+                    </div>
+
+                    <!-- address -->
+                    <div class="field">
+                        <label for="address">Dirección</label>
+                        <input
+                            type="text"
+                            pInputText
+                            id="address"
+                            [(ngModel)]="employee.address"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !employee.address
+                            }"
+                        />
+                    </div>
+                </ng-template>
+
+                <ng-template pTemplate="footer">
+                    <button
+                        pButton
+                        pRipple
+                        label="Cancelar"
+                        icon="pi pi-times"
+                        class="p-button-text"
+                        (click)="hideUpdateDialog()"
+                    ></button>
+                    <button
+                        pButton
+                        pRipple
+                        label="Guardar"
+                        icon="pi pi-check"
+                        class="p-button-text"
+                        (click)="update()"
+                    ></button>
+                </ng-template>
+            </p-dialog>
+
+            <!-- Delete product dialog -->
+            <p-dialog
+                [(visible)]="deleteDialog"
+                header="Confirmar"
+                [modal]="true"
+                [style]="{ width: '450px' }"
+            >
+                <div class="flex align-items-center justify-content-center">
+                    <i
+                        class="pi pi-exclamation-triangle mr-3"
+                        style="font-size: 2rem"
+                    ></i>
+                    <span *ngIf="employee"
+                        >Estás seguro que quieres eliminar este registro :
+                        <b>{{ employee.name }}</b
+                        >?</span
+                    >
+                </div>
+                <ng-template pTemplate="footer">
+                    <button
+                        pButton
+                        pRipple
+                        icon="pi pi-times"
+                        class="p-button-text"
+                        label="Cancelar"
+                        (click)="hideDeleteDialog()"
+                    ></button>
+                    <button
+                        pButton
+                        pRipple
+                        icon="pi pi-check"
+                        class="p-button-text"
+                        label="Confirmar"
+                        (click)="remove()"
                     ></button>
                 </ng-template>
             </p-dialog>

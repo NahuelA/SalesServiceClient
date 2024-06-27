@@ -15,6 +15,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     limit: number = 50;
 
     sales!: Sale[];
+    sale: Sale = {};
     dialogForSeeSale: boolean = false;
 
     salesData: any;
@@ -59,6 +60,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.salesService.get(this.limit).subscribe((data: CustomResponse) => {
             this.sales = data.result as Sale[];
+            console.log(this.sales);
         });
 
         this.profitService.get(2024).subscribe((data: any) => {
@@ -154,11 +156,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
         };
     }
 
-    seeProductDialog() {
+    seeSaleDialog(sale: Sale) {
         this.dialogForSeeSale = true;
+        this.sale = sale;
     }
 
-    hideDialogForProductDetails() {
+    hideDialogForSaleDetails() {
         this.dialogForSeeSale = false;
     }
 

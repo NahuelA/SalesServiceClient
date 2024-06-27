@@ -165,6 +165,7 @@
                                 pRipple
                                 type="button"
                                 icon="pi pi-pencil"
+                                (click)="openUpdateDialog(customer)"
                                 class="p-button-rounded p-button-primary p-button-outlined"
                             ></button>
                             <button
@@ -174,6 +175,7 @@
                                 pRipple
                                 type="button"
                                 icon="pi pi-trash"
+                                (click)="openDeleteDialog(customer)"
                                 class="p-button-rounded p-button-danger p-button-outlined"
                             ></button>
                         </td>
@@ -343,6 +345,184 @@
                         icon="pi pi-check"
                         class="p-button-text"
                         (click)="saveProduct()"
+                    ></button>
+                </ng-template>
+            </p-dialog>
+
+            <!-- Update customer -->
+            <p-dialog
+                [(visible)]="updateDialog"
+                [style]="{ width: '450px' }"
+                header="Añadir cliente"
+                [modal]="true"
+                class="p-fluid"
+            >
+                <ng-template pTemplate="content">
+                    <!-- Name -->
+                    <div class="field">
+                        <label for="name">Nombre</label>
+                        <input
+                            type="text"
+                            pInputText
+                            id="name"
+                            [(ngModel)]="customer.name"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !customer.name
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !customer.name"
+                            >El nombre es requerido.</small
+                        >
+                    </div>
+
+                    <!-- Surname -->
+                    <div class="field">
+                        <label for="surname">Apellido</label>
+                        <input
+                            type="text"
+                            pInputText
+                            id="surname"
+                            [(ngModel)]="customer.surname"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !customer.surname
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !customer.surname"
+                            >El apellido es requerido.</small
+                        >
+                    </div>
+
+                    <!-- Dni -->
+                    <div class="field">
+                        <label for="dni">Dni</label>
+                        <input
+                            type="number"
+                            pInputText
+                            id="dni"
+                            [(ngModel)]="customer.dni"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !customer.dni
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !customer.dni"
+                            >El dni es requerido.</small
+                        >
+                    </div>
+
+                    <!-- phoneNumber -->
+                    <div class="field">
+                        <label for="phoneNumber">Celular</label>
+                        <input
+                            type="number"
+                            pInputText
+                            id="phoneNumber"
+                            [(ngModel)]="customer.phoneNumber"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !customer.phoneNumber
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !customer.phoneNumber"
+                            >El celular es requerido.</small
+                        >
+                    </div>
+
+                    <!-- address -->
+                    <div class="field">
+                        <label for="address">Dirección</label>
+                        <input
+                            type="text"
+                            pInputText
+                            id="address"
+                            [(ngModel)]="customer.address"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !customer.address
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !customer.address"
+                            >La dirección es requerido.</small
+                        >
+                    </div>
+                </ng-template>
+
+                <ng-template pTemplate="footer">
+                    <button
+                        pButton
+                        pRipple
+                        label="Cancelar"
+                        icon="pi pi-times"
+                        class="p-button-text"
+                        (click)="hideUpdateDialog()"
+                    ></button>
+                    <button
+                        pButton
+                        pRipple
+                        label="Guardar"
+                        icon="pi pi-check"
+                        class="p-button-text"
+                        (click)="update()"
+                    ></button>
+                </ng-template>
+            </p-dialog>
+
+            <!-- Delete product dialog -->
+            <p-dialog
+                [(visible)]="deleteDialog"
+                header="Confirmar"
+                [modal]="true"
+                [style]="{ width: '450px' }"
+            >
+                <div class="flex align-items-center justify-content-center">
+                    <i
+                        class="pi pi-exclamation-triangle mr-3"
+                        style="font-size: 2rem"
+                    ></i>
+                    <span *ngIf="customer"
+                        >Estás seguro que quieres eliminar este registro :
+                        <b>{{ customer.name }}</b
+                        >?</span
+                    >
+                </div>
+                <ng-template pTemplate="footer">
+                    <button
+                        pButton
+                        pRipple
+                        icon="pi pi-times"
+                        class="p-button-text"
+                        label="Cancelar"
+                        (click)="hideDeleteDialog()"
+                    ></button>
+                    <button
+                        pButton
+                        pRipple
+                        icon="pi pi-check"
+                        class="p-button-text"
+                        label="Confirmar"
+                        (click)="remove()"
                     ></button>
                 </ng-template>
             </p-dialog>

@@ -54,13 +54,6 @@ import { AppLayoutComponent } from "./layout/app.layout.component";
                                 ).then((m) => m.SaleModule),
                         },
                         {
-                            path: "uikit",
-                            loadChildren: () =>
-                                import(
-                                    "./demo/components/uikit/uikit.module"
-                                ).then((m) => m.UIkitModule),
-                        },
-                        {
                             path: "pages",
                             loadChildren: () =>
                                 import(

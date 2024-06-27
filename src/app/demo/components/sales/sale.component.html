@@ -14,19 +14,10 @@
                         class="p-button-success mr-2"
                         (click)="openNew()"
                     ></button>
-                    <!-- <button
-                        pButton
-                        pRipple
-                        label="Delete"
-                        icon="pi pi-trash"
-                        class="p-button-danger"
-                        (click)="deleteSelectedProducts()"
-                        [disabled]="
-                            !selectedProducts || !selectedProducts.length
-                        "
-                    ></button> -->
                 </div>
             </div>
+
+            <!-- Sales table -->
             <p-table
                 #dt1
                 [value]="sales"
@@ -43,11 +34,11 @@
                     'client.phoneNumber',
                     'guarantorDni',
                     'guarantorName',
-                    'productDescription',
                     'date'
                 ]"
                 responsiveLayout="scroll"
             >
+                <!-- Btns header -->
                 <ng-template pTemplate="caption">
                     <div
                         class="flex justify-content-between flex-column sm:flex-row"
@@ -191,15 +182,18 @@
                                 flex-direction: row;
                             "
                         >
+                            <!-- Update sale -->
                             <button
                                 title="Editar registro"
                                 pButton
                                 pRipple
                                 type="button"
                                 icon="pi pi-pencil"
-                                (click)="openEditSaleDialog(sale)"
+                                (click)="openUpdateDialog(sale)"
                                 class="p-button-rounded p-button-primary p-button-outlined"
                             ></button>
+
+                            <!-- Remove sale -->
                             <button
                                 title="Eliminar registro"
                                 style="margin-left: 5px"
@@ -207,6 +201,7 @@
                                 pRipple
                                 type="button"
                                 icon="pi pi-trash"
+                                (click)="openRemoveDialog(sale)"
                                 class="p-button-rounded p-button-danger p-button-outlined"
                             ></button>
                             <!-- Open for pay fee -->
@@ -225,12 +220,14 @@
                                 icon="pi pi-check"
                                 class="p-button-rounded p-button-success p-button-outlined"
                             ></button>
+                            <!-- Pay fee toast -->
                             <div>
                                 <p-toast></p-toast>
                                 <p-confirmPopup
                                     key="makeAsPaid"
                                 ></p-confirmPopup>
                             </div>
+
                             <!-- Open change payment date dialog -->
                             <button
                                 title="Cambiar fecha de pago"
@@ -244,6 +241,7 @@
                                 icon="pi pi-calendar-plus"
                                 class="p-button-rounded p-button-info p-button-outlined"
                             ></button>
+                            <!-- Change payment date toast -->
                             <div>
                                 <p-toast></p-toast>
                                 <p-confirmPopup
@@ -331,7 +329,9 @@
                                 pButton
                                 pRipple
                                 type="button"
-                                label="{{ sale?.timesThePaymentDateWasChanged }}"
+                                label="{{
+                                    sale?.timesThePaymentDateWasChanged
+                                }}"
                                 icon="pi pi-arrow-up-right"
                                 class="p-button-rounded p-button-success"
                                 (click)="
@@ -1136,6 +1136,44 @@
                         icon="pi pi-check"
                         class="p-button-text"
                         (click)="makeAsPaid($event)"
+                    ></button>
+                </ng-template>
+            </p-dialog>
+
+            <!-- Delete product dialog -->
+            <p-dialog
+                [(visible)]="deleteDialog"
+                header="Confirmar"
+                [modal]="true"
+                [style]="{ width: '450px' }"
+            >
+                <div class="flex align-items-center justify-content-center">
+                    <i
+                        class="pi pi-exclamation-triangle mr-3"
+                        style="font-size: 2rem"
+                    ></i>
+                    <span *ngIf="sale"
+                        >Estás seguro que quieres eliminar este registro :
+                        <b>{{ sale.productDescription }}</b
+                        >?</span
+                    >
+                </div>
+                <ng-template pTemplate="footer">
+                    <button
+                        pButton
+                        pRipple
+                        icon="pi pi-times"
+                        class="p-button-text"
+                        label="Cancelar"
+                        (click)="hideDeleteDialog()"
+                    ></button>
+                    <button
+                        pButton
+                        pRipple
+                        icon="pi pi-check"
+                        class="p-button-text"
+                        label="Confirmar"
+                        (click)="remove()"
                     ></button>
                 </ng-template>
             </p-dialog>

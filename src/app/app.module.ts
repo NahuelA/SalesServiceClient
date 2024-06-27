@@ -6,8 +6,6 @@ import { AppLayoutModule } from "./layout/app.layout.module";
 import { NotfoundComponent } from "./demo/components/notfound/notfound.component";
 import { ProductService } from "./demo/service/product.service";
 import { CustomerService } from "./demo/service/customer.service";
-import { PhotoService } from "./demo/service/photo.service";
-import { TranslateLoader, TranslateModule } from "@ngx-translate/core";
 import { HttpClient, HttpClientModule } from "@angular/common/http";
 import { FormsModule } from "@angular/forms";
 import { BrowserModule } from "@angular/platform-browser";
@@ -51,7 +49,6 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     providers: [
         { provide: LocationStrategy, useClass: HashLocationStrategy },
         CustomerService,
-        PhotoService,
         ProductService,
         EmployeeService,
         SaleService,

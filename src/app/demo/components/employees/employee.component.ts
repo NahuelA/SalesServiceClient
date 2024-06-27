@@ -26,6 +26,8 @@ export class EmployeeComponent implements OnInit, OnDestroy {
     employee: Employee = {};
     submitted: boolean = false;
     dialog: boolean = false;
+    updateDialog: boolean = false;
+    deleteDialog: boolean = false;
 
     selectedEmployee: Employee = {};
 
@@ -97,66 +99,112 @@ export class EmployeeComponent implements OnInit, OnDestroy {
         this.submitted = false;
     }
 
+    openDeleteDialog(employee: Employee) {
+        this.employee = employee;
+        this.deleteDialog = true;
+    }
+
+    hideDeleteDialog() {
+        this.deleteDialog = false;
+    }
+
+    openUpdateDialog(employee: Employee) {
+        this.employee = employee;
+        this.updateDialog = true;
+    }
+
+    hideUpdateDialog() {
+        this.updateDialog = false;
+    }
+
+    update() {
+        this.hideUpdateDialog();
+
+        this.employee.phoneNumber = this.employee?.phoneNumber?.toString();
+
+        this._employeeService.update(this.employee).subscribe({
+            next: (employee) => {
+                this.messageService.add({
+                    severity: "success",
+                    summary: "Registro actualizado con éxito",
+                    detail: employee.result?.toString(),
+                    life: 3000,
+                });
+
+                this.employee = {};
+            },
+
+            error: (error) => {
+                this.messageService.add({
+                    severity: "error",
+                    summary:
+                        "Hubo un error al actualizar al empleado, inténtalo de nuevo.",
+                    detail: error.result?.toString(),
+                    life: 3000,
+                });
+
+                console.log(error);
+            },
+        });
+    }
+
+    remove() {
+        this.deleteDialog = false;
+
+        this._employeeService.delete(this.employee).subscribe({
+            next: (employee) => {
+                this.messageService.add({
+                    severity: "success",
+                    summary: "Registro eliminado con éxito",
+                    detail: employee.result?.toString(),
+                    life: 3000,
+                });
+
+                this._employeeService.get().subscribe((employees) => {
+                    this.employees = employees.result as Employee[];
+                    this.loading = false;
+                });
+            },
+            error: (error) => {
+                this.messageService.add({
+                    severity: "error",
+                    summary:
+                        "Hubo un error al eliminar al empleado, inténtalo de nuevo.",
+                    detail: error?.error?.result?.toString(),
+                    life: 3000,
+                });
+            },
+        });
+
+        this.employee = {};
+    }
+
     saveProduct() {
         this.submitted = true;
         this.dialog = false;
 
         this.employee.phoneNumber = this.employee?.phoneNumber?.toString();
-        this.employee.country = "";
-        this.employee.city = "";
 
-        this._employeeService.add(this.employee).subscribe((employee) => {
-            this.messageService.add({
-                severity: "success",
-                summary: "Registro creado con éxito",
-                detail: employee.result.toString(),
-                life: 3000,
-            });
+        this._employeeService.add(this.employee).subscribe({
+            next: (employee) => {
+                this.messageService.add({
+                    severity: "success",
+                    summary: "Registro creado con éxito",
+                    detail: employee.result?.toString(),
+                    life: 3000,
+                });
+                this.employee = {};
+            },
 
-            if (employee.statusCode === 400)
+            error: (error) => {
                 this.messageService.add({
                     severity: "error",
                     summary:
                         "Hubo un error al registrar al empleado, inténtalo de nuevo.",
-                    detail: employee.result.toString(),
+                    detail: error.result?.toString(),
                     life: 3000,
                 });
+            },
         });
-        // if (this.employee.username) {
-        //     if (this.product.id) {
-        //         // @ts-ignore
-        //         this.product.inventoryStatus = this.product.inventoryStatus
-        //             .value
-        //             ? this.product.inventoryStatus.value
-        //             : this.product.inventoryStatus;
-        //         this.products[this.findIndexById(this.product.id)] =
-        //             this.product;
-        //         this.messageService.add({
-        //             severity: "success",
-        //             summary: "Successful",
-        //             detail: "Product Updated",
-        //             life: 3000,
-        //         });
-        //     } else {
-        //         this.product.id = this.createId();
-        //         this.product.code = this.createId();
-        //         this.product.image = "product-placeholder.svg";
-        //         // @ts-ignore
-        //         this.product.inventoryStatus = this.product.inventoryStatus
-        //             ? this.product.inventoryStatus.value
-        //             : "INSTOCK";
-        //         this.products.push(this.product);
-        //         this.messageService.add({
-        //             severity: "success",
-        //             summary: "Successful",
-        //             detail: "Product Created",
-        //             life: 3000,
-        //         });
-        //     }
-
-        //     this.products = [...this.products];
-        //     this.productDialog = false;
-        //     this.product = {};
-        // }
     }
 }

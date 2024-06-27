@@ -1,14 +1,12 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Employee } from "../contracts/employee";
-import { RouterModule } from "@angular/router";
 import { CustomResponse } from "../contracts/response";
 import { Observable, Subject, tap } from "rxjs";
+import { prodApi } from "src/app/layout/urlservice";
 
 @Injectable()
 export class EmployeeService {
-    mainUri: string = "http://localhost:5117/api/";
-
     private _refresh$ = new Subject<void>();
 
     constructor(private http: HttpClient) {}
@@ -18,30 +16,45 @@ export class EmployeeService {
     }
 
     get(): Observable<CustomResponse> {
-        const res = this.http.get<CustomResponse>(`${this.mainUri}employee/`);
+        const res = this.http.get<CustomResponse>(`${prodApi}employee/`);
         return res;
     }
 
     getEmployeeByDni(dni: number): Observable<CustomResponse> {
         const res = this.http.get<CustomResponse>(
-            `${this.mainUri}employee/${dni}`
+            `${prodApi}employee/${dni}`
         );
         return res;
     }
 
     getEmployeesForMenu(limit: number): Observable<CustomResponse> {
-        const res = this.http.get<CustomResponse>(`${this.mainUri}employee`);
+        const res = this.http.get<CustomResponse>(`${prodApi}employee`);
         return res;
     }
 
     add(employee: Employee): Observable<CustomResponse> {
         const post = this.http
-            .post<CustomResponse>(`${this.mainUri}employee/`, employee)
+            .post<CustomResponse>(`${prodApi}employee/`, employee)
             .pipe(
                 tap(() => {
                     this._refresh$.next();
                 })
             );
         return post;
+    }
+
+    update(employee: Employee): Observable<CustomResponse> {
+        const put = this.http.put<CustomResponse>(
+            `${prodApi}employee/${employee.employeeId}`,
+            employee
+        );
+        return put;
+    }
+
+    delete(employee: Employee): Observable<CustomResponse> {
+        const remove = this.http.delete<CustomResponse>(
+            `${prodApi}employee/${employee.employeeId}`
+        );
+        return remove;
     }
 }

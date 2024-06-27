@@ -3,11 +3,10 @@ import { Injectable } from "@angular/core";
 import { Product } from "../contracts/product";
 import { CustomResponse } from "../contracts/response";
 import { Observable, Subject, tap } from "rxjs";
+import { prodApi } from "src/app/layout/urlservice";
 
 @Injectable()
 export class ProductService {
-    mainUri: string = "http://localhost:5117/api/";
-
     private _refresh$ = new Subject<void>();
 
     constructor(private http: HttpClient) {}
@@ -17,12 +16,12 @@ export class ProductService {
     }
 
     get(): Observable<any> {
-        const res = this.http.get<CustomResponse>(`${this.mainUri}product`);
+        const res = this.http.get<CustomResponse>(`${prodApi}product`);
         return res;
     }
 
     add(product: Product): Observable<any> {
-        const post = this.http.post(`${this.mainUri}product`, product)?.pipe(
+        const post = this.http.post(`${prodApi}product`, product)?.pipe(
             tap(() => {
                 this._refresh$.next();
             })

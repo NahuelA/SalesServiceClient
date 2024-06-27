@@ -5,6 +5,7 @@ import { CustomerService } from "../../service/customer.service";
 import { Customer } from "../../contracts/customer";
 import { Subscription } from "rxjs";
 import { CustomResponse } from "../../contracts/response";
+import { cu } from "@fullcalendar/core/internal-common";
 
 @Component({
     templateUrl: "./client.component.html",
@@ -20,8 +21,10 @@ export class ClientComponent implements OnInit {
     customer: Customer = {};
     submitted: boolean = false;
     dialog: boolean = false;
+    updateDialog: boolean = false;
+    deleteDialog: boolean = false;
 
-    selectedEmployee: Customer = {};
+    selectedCustomer: Customer = {};
 
     idFrozen: boolean = false;
 
@@ -77,68 +80,109 @@ export class ClientComponent implements OnInit {
         this.submitted = false;
     }
 
+    openDeleteDialog(customer: Customer) {
+        this.deleteDialog = true;
+        this.customer = customer;
+    }
+
+    hideDeleteDialog() {
+        this.deleteDialog = false;
+        this.submitted = false;
+    }
+
+    openUpdateDialog(customer: Customer) {
+        this.updateDialog = true;
+        this.customer = customer;
+    }
+
+    hideUpdateDialog() {
+        this.updateDialog = false;
+        this.submitted = false;
+    }
+
+    update() {
+        this.updateDialog = false;
+
+        this.customer.phoneNumber = this.customer.phoneNumber?.toString();
+
+        this._customerService.update(this.customer).subscribe({
+            next: (customer) => {
+                this.messageService.add({
+                    severity: "success",
+                    summary: "Registro actualizado con éxito",
+                    detail: customer.result?.toString(),
+                    life: 3000,
+                });
+
+                this.customer = {};
+            },
+            error: (error) => {
+                this.messageService.add({
+                    severity: "error",
+                    summary:
+                        "Hubo un error al actualizar al cliente, inténtalo de nuevo.",
+                    detail: error?.error?.result?.toString(),
+                    life: 3000,
+                });
+            },
+        });
+    }
+
+    remove() {
+        this.deleteDialog = false;
+
+        this._customerService.delete(this.customer.clientId).subscribe({
+            next: (customer) => {
+                this.messageService.add({
+                    severity: "success",
+                    summary: "Registro eliminado con éxito",
+                    detail: customer.result?.toString(),
+                    life: 3000,
+                });
+
+                this._customerService.get().subscribe((customers) => {
+                    this.customers = customers.result as Customer[];
+                    this.loading = false;
+                });
+            },
+            error: (error) => {
+                this.messageService.add({
+                    severity: "error",
+                    summary:
+                        "Hubo un error al eliminar al cliente, inténtalo de nuevo.",
+                    detail: error?.error?.result?.toString(),
+                    life: 3000,
+                });
+            },
+        });
+
+        this.customer = {};
+    }
+
     saveProduct() {
         this.submitted = true;
         this.dialog = false;
 
         this.customer.phoneNumber = this.customer.phoneNumber?.toString();
-        this.customer.country = "";
-        this.customer.city = "";
 
-        this._customerService.add(this.customer).subscribe(
-            (customer) => {
+        this._customerService.add(this.customer).subscribe({
+            next: (customer) => {
                 this.messageService.add({
                     severity: "success",
                     summary: "Registro creado con éxito",
-                    detail: customer.result.toString(),
+                    detail: customer.result?.toString(),
                     life: 3000,
                 });
             },
-            (error) => {
+            error: (error) => {
                 this.messageService.add({
                     severity: "error",
                     summary:
                         "Hubo un error al registrar al cliente, inténtalo de nuevo.",
-                    detail: error?.error?.result.toString(),
+                    detail: error?.error?.result?.toString(),
                     life: 3000,
                 });
-            }
-        );
-        // if (this.employee.username) {
-        //     if (this.product.id) {
-        //         // @ts-ignore
-        //         this.product.inventoryStatus = this.product.inventoryStatus
-        //             .value
-        //             ? this.product.inventoryStatus.value
-        //             : this.product.inventoryStatus;
-        //         this.products[this.findIndexById(this.product.id)] =
-        //             this.product;
-        //         this.messageService.add({
-        //             severity: "success",
-        //             summary: "Successful",
-        //             detail: "Product Updated",
-        //             life: 3000,
-        //         });
-        //     } else {
-        //         this.product.id = this.createId();
-        //         this.product.code = this.createId();
-        //         this.product.image = "product-placeholder.svg";
-        //         // @ts-ignore
-        //         this.product.inventoryStatus = this.product.inventoryStatus
-        //             ? this.product.inventoryStatus.value
-        //             : "INSTOCK";
-        //         this.products.push(this.product);
-        //         this.messageService.add({
-        //             severity: "success",
-        //             summary: "Successful",
-        //             detail: "Product Created",
-        //             life: 3000,
-        //         });
-        //     }
-
-        //     this.products = [...this.products];
-        //     this.productDialog = false;
-        //     this.product = {};
-        // }
+            },
+        });
     }
 }

@@ -9,20 +9,16 @@
                 [rows]="5"
                 responsiveLayout="scroll"
             >
+                <!-- Headers -->
                 <ng-template pTemplate="header">
                     <tr>
                         <th pSortableColumn="date">
                             Fecha
-                            <p-sortIcon field="date"></p-sortIcon>
+                            <p-sortIcon field="sale.date"></p-sortIcon>
                         </th>
-                        <th pSortableColumn="product?.productName">
-                            Producto
-                            <p-sortIcon
-                                field="product?.productName"
-                            ></p-sortIcon>
-                        </th>
+                        <th>Producto</th>
                         <th pSortableColumn="installment">
-                            Entrega
+                            Cuota
                             <p-sortIcon field="installment"></p-sortIcon>
                         </th>
                         <th pSortableColumn="amount">
@@ -31,16 +27,17 @@
                         <th>Detalles</th>
                     </tr>
                 </ng-template>
+                <!-- Body -->
                 <ng-template pTemplate="body" let-sale>
                     <tr>
                         <td style="width: 30%; min-width: 5rem">
                             <span>{{ sale?.date }}</span>
                         </td>
                         <td style="width: 35%; min-width: 7rem">
-                            {{ sale?.product?.productName }}
+                            {{ sale?.productDescription }}
                         </td>
                         <td style="width: 35%; min-width: 8rem">
-                            {{ sale?.installment | currency : "ARS" }}
+                            {{ sale?.fee | currency : "ARS" }}
                         </td>
                         <td style="width: 10%; min-width: 8rem">
                             {{ sale?.amount }}
@@ -51,7 +48,7 @@
                                 pRipple
                                 type="button"
                                 icon="pi pi-search"
-                                (click)="seeProductDialog(sale?.product)"
+                                (click)="seeSaleDialog(sale)"
                                 class="p-button p-component p-button-text p-button-icon-only"
                             ></button>
                         </td>
@@ -59,24 +56,85 @@
                 </ng-template>
             </p-table>
         </div>
+
         <!-- Ver venta -->
         <p-dialog
             [(visible)]="dialogForSeeSale"
             [style]="{ width: '450px' }"
-            header="Producto"
+            header="Venta | {{ sale.productDescription }}"
             [modal]="true"
             class="p-fluid"
         >
             <ng-template pTemplate="content">
                 <div class="field">
-                    <label for="seeProductDetails">{{
-                        productDetail?.productName
-                    }}</label>
+                    <label for="cname">Cliente</label>
+                    <input
+                        id="cname"
+                        type="text"
+                        pInputText
+                        placeholder="{{ sale?.client?.name }}"
+                        readonly
+                    />
                 </div>
                 <div class="field">
-                    <label for="seeProductDetails">{{
-                        productDetail?.productName
-                    }}</label>
+                    <label for="csurname">Empleado</label>
+                    <input
+                        id="csurname"
+                        type="text"
+                        pInputText
+                        placeholder="{{ sale?.employee?.name }}"
+                        readonly
+                    />
+                </div>
+                <div class="field">
+                    <label for="fee">Cuota</label>
+                    <input
+                        id="fee"
+                        type="text"
+                        pInputText
+                        placeholder="{{ sale?.fee }}"
+                        readonly
+                    />
+                </div>
+                <div class="field">
+                    <label for="date">Fecha</label>
+                    <input
+                        id="date"
+                        type="text"
+                        pInputText
+                        placeholder="{{ sale?.date }}"
+                        readonly
+                    />
+                </div>
+                <div class="field">
+                    <label for="paymentDate">Fecha de pago</label>
+                    <input
+                        id="paymentDate"
+                        type="text"
+                        pInputText
+                        placeholder="{{ sale?.paymentDate }}"
+                        readonly
+                    />
+                </div>
+                <div class="field">
+                    <label for="newPaymentDate">Nueva fecha de pago</label>
+                    <input
+                        id="newPaymentDate"
+                        type="text"
+                        pInputText
+                        placeholder="{{ sale?.newPaymentDate }}"
+                        readonly
+                    />
+                </div>
+                <div class="field">
+                    <label for="amount">Cantidad</label>
+                    <input
+                        id="amount"
+                        type="text"
+                        pInputText
+                        placeholder="{{ sale?.amount }}"
+                        readonly
+                    />
                 </div>
             </ng-template>
             <!-- Footer -->
@@ -87,165 +145,10 @@
                     label="Realizado"
                     icon="pi pi-check"
                     class="p-button-text"
-                    (click)="hideDialogForProductDetails()"
+                    (click)="hideDialogForSaleDetails()"
                 ></button>
             </ng-template>
         </p-dialog>
-
-        <!-- Productos con más ventas -->
-        <!-- <div class="card">
-            <div class="flex justify-content-between align-items-center mb-5">
-                <h5>Productos más vendidos</h5>
-            </div>
-            <ul class="list-none p-0 m-0">
-                <li
-                    class="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-4"
-                >
-                    <div>
-                        <span class="text-900 font-medium mr-2 mb-1 md:mb-0"
-                            >Space T-Shirt</span
-                        >
-                        <div class="mt-1 text-600">Clothing</div>
-                    </div>
-                    <div class="mt-2 md:mt-0 flex align-items-center">
-                        <div
-                            class="surface-300 border-round overflow-hidden w-10rem lg:w-6rem"
-                            [ngStyle]="{ height: '8px' }"
-                        >
-                            <div
-                                class="bg-orange-500 h-full"
-                                [ngStyle]="{ width: '50%' }"
-                            ></div>
-                        </div>
-                        <span class="text-orange-500 ml-3 font-medium"
-                            >%50</span
-                        >
-                    </div>
-                </li>
-                <li
-                    class="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-4"
-                >
-                    <div>
-                        <span class="text-900 font-medium mr-2 mb-1 md:mb-0"
-                            >Portal Sticker</span
-                        >
-                        <div class="mt-1 text-600">Accessories</div>
-                    </div>
-                    <div
-                        class="mt-2 md:mt-0 ml-0 md:ml-8 flex align-items-center"
-                    >
-                        <div
-                            class="surface-300 border-round overflow-hidden w-10rem lg:w-6rem"
-                            [ngStyle]="{ height: '8px' }"
-                        >
-                            <div
-                                class="bg-cyan-500 h-full"
-                                [ngStyle]="{ width: '16%' }"
-                            ></div>
-                        </div>
-                        <span class="text-cyan-500 ml-3 font-medium">%16</span>
-                    </div>
-                </li>
-                <li
-                    class="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-4"
-                >
-                    <div>
-                        <span class="text-900 font-medium mr-2 mb-1 md:mb-0"
-                            >Supernova Sticker</span
-                        >
-                        <div class="mt-1 text-600">Accessories</div>
-                    </div>
-                    <div
-                        class="mt-2 md:mt-0 ml-0 md:ml-8 flex align-items-center"
-                    >
-                        <div
-                            class="surface-300 border-round overflow-hidden w-10rem lg:w-6rem"
-                            [ngStyle]="{ height: '8px' }"
-                        >
-                            <div
-                                class="bg-pink-500 h-full"
-                                [ngStyle]="{ width: '67%' }"
-                            ></div>
-                        </div>
-                        <span class="text-pink-500 ml-3 font-medium">%67</span>
-                    </div>
-                </li>
-                <li
-                    class="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-4"
-                >
-                    <div>
-                        <span class="text-900 font-medium mr-2 mb-1 md:mb-0"
-                            >Wonders Notebook</span
-                        >
-                        <div class="mt-1 text-600">Office</div>
-                    </div>
-                    <div
-                        class="mt-2 md:mt-0 ml-0 md:ml-8 flex align-items-center"
-                    >
-                        <div
-                            class="surface-300 border-round overflow-hidden w-10rem lg:w-6rem"
-                            [ngStyle]="{ height: '8px' }"
-                        >
-                            <div
-                                class="bg-green-500 h-full"
-                                [ngStyle]="{ width: '35%' }"
-                            ></div>
-                        </div>
-                        <span class="text-green-500 ml-3 font-medium">%35</span>
-                    </div>
-                </li>
-                <li
-                    class="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-4"
-                >
-                    <div>
-                        <span class="text-900 font-medium mr-2 mb-1 md:mb-0"
-                            >Mat Black Case</span
-                        >
-                        <div class="mt-1 text-600">Accessories</div>
-                    </div>
-                    <div
-                        class="mt-2 md:mt-0 ml-0 md:ml-8 flex align-items-center"
-                    >
-                        <div
-                            class="surface-300 border-round overflow-hidden w-10rem lg:w-6rem"
-                            [ngStyle]="{ height: '8px' }"
-                        >
-                            <div
-                                class="bg-purple-500 h-full"
-                                [ngStyle]="{ width: '75%' }"
-                            ></div>
-                        </div>
-                        <span class="text-purple-500 ml-3 font-medium"
-                            >%75</span
-                        >
-                    </div>
-                </li>
-                <li
-                    class="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-4"
-                >
-                    <div>
-                        <span class="text-900 font-medium mr-2 mb-1 md:mb-0"
-                            >Robots T-Shirt</span
-                        >
-                        <div class="mt-1 text-600">Clothing</div>
-                    </div>
-                    <div
-                        class="mt-2 md:mt-0 ml-0 md:ml-8 flex align-items-center"
-                    >
-                        <div
-                            class="surface-300 border-round overflow-hidden w-10rem lg:w-6rem"
-                            [ngStyle]="{ height: '8px' }"
-                        >
-                            <div
-                                class="bg-teal-500 h-full"
-                                [ngStyle]="{ width: '40%' }"
-                            ></div>
-                        </div>
-                        <span class="text-teal-500 ml-3 font-medium">%40</span>
-                    </div>
-                </li>
-            </ul>
-        </div> -->
     </div>
 
     <!-- Overview -->
