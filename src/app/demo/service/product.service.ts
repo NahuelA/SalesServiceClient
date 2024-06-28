@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { Product } from "../contracts/product";
 import { CustomResponse } from "../contracts/response";
 import { Observable, Subject, tap } from "rxjs";
-import { prodApi } from "src/app/layout/urlservice";
+import { localApi } from "src/app/layout/urlservice";
 
 @Injectable()
 export class ProductService {
@@ -16,12 +16,12 @@ export class ProductService {
     }
 
     get(): Observable<any> {
-        const res = this.http.get<CustomResponse>(`${prodApi}product`);
+        const res = this.http.get<CustomResponse>(`${localApi}product`);
         return res;
     }
 
     add(product: Product): Observable<any> {
-        const post = this.http.post(`${prodApi}product`, product)?.pipe(
+        const post = this.http.post(`${localApi}product`, product)?.pipe(
             tap(() => {
                 this._refresh$.next();
             })

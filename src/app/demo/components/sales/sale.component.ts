@@ -109,11 +109,7 @@ export class SaleComponent implements OnInit, OnDestroy {
             (params: Params) => {
                 this.dni = Number.parseInt(params["dni"]);
 
-                this._employeeService.getEmployeeByDni(this.dni).subscribe({
-                    next: (employee) => {
-                        this.employee = employee.result as Employee;
-                    },
-                });
+                console.log(this.dni);
 
                 this.loadSalesAndProfit();
             }
@@ -133,14 +129,19 @@ export class SaleComponent implements OnInit, OnDestroy {
     }
 
     loadSalesAndProfit() {
+        this._employeeService.getEmployeeByDni(this.dni).subscribe({
+            next: (employee) => {
+                this.employee = employee.result as Employee;
+            },
+        });
+
         if (!isNaN(this.dni)) {
             this._salesService
                 .getBySeller(1000, this.dni)
                 .subscribe((data: CustomResponse) => {
                     this.sales = data.result as Sale[];
                     this.title =
-                        this.employee?.name ||
-                        `${this.employee?.name} no tiene ventas`;
+                        this.sales.at(0)?.employee?.name || this.employee?.name;
                     this.loading = false;
                 });
 
@@ -148,9 +149,13 @@ export class SaleComponent implements OnInit, OnDestroy {
                 .getEmployeeOverview(this.dni, 2024)
                 .subscribe((data: any) => {
                     this.employeeCollectionR = data.result.profit;
-                    this.chartTitle = `Cobranza mensual de ${this.employee?.name}`;
+                    this.chartTitle = `Cobranza mensual de ${
+                        this.sales.at(0)?.employee?.name || this.employee?.name
+                    }`;
 
-                    this.labelChart = `Dinero cobrado por ${this.employee?.name}`;
+                    this.labelChart = `Dinero cobrado por ${
+                        this.sales.at(0)?.employee?.name || this.employee?.name
+                    }`;
 
                     this.initChart();
                 });
