@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { PaymentDto } from "../contracts/Dtos/paymentDto";
 import { CustomResponse } from "../contracts/response";
 import { Observable, Subject, tap } from "rxjs";
-import { localApi } from "src/app/layout/urlservice";
+import { prodApi } from "src/app/layout/urlservice";
 
 @Injectable()
 export class PaymentService {
@@ -17,14 +17,14 @@ export class PaymentService {
 
     get(): Observable<any> {
         const payments = this.http.get<CustomResponse>(
-            `${localApi}payment`
+            `${prodApi}payment`
         );
         return payments;
     }
 
     add(payment: PaymentDto): Observable<any> {
         const newPayment = this.http
-            .post(`${localApi}payment`, payment)
+            .post(`${prodApi}payment`, payment)
             .pipe(
                 tap(() => {
                     this._refresh$.next();

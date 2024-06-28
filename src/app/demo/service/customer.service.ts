@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { Customer } from "../contracts/customer";
 import { CustomResponse } from "../contracts/response";
 import { Observable, Subject, tap } from "rxjs";
-import { localApi } from "src/app/layout/urlservice";
+import { prodApi } from "src/app/layout/urlservice";
 
 @Injectable()
 export class CustomerService {
@@ -16,20 +16,20 @@ export class CustomerService {
     }
 
     get(): Observable<CustomResponse> {
-        const res = this.http.get<CustomResponse>(`${localApi}client/`);
+        const res = this.http.get<CustomResponse>(`${prodApi}client/`);
         return res;
     }
 
     getByDni(dni: number): Observable<CustomResponse> {
         const res = this.http.get<CustomResponse>(
-            `${localApi}client/${dni}`
+            `${prodApi}client/${dni}`
         );
         return res;
     }
 
     add(customer: Customer): Observable<CustomResponse> {
         const post = this.http
-            .post<CustomResponse>(`${localApi}client/`, customer)
+            .post<CustomResponse>(`${prodApi}client/`, customer)
             .pipe(
                 tap(() => {
                     this._refresh$.next();
@@ -40,7 +40,7 @@ export class CustomerService {
 
     update(customer: Customer): Observable<CustomResponse> {
         const put = this.http.put<CustomResponse>(
-            `${localApi}client/${customer.clientId}`,
+            `${prodApi}client/${customer.clientId}`,
             customer
         );
         return put;
@@ -48,7 +48,7 @@ export class CustomerService {
 
     delete(id): Observable<CustomResponse> {
         const remove = this.http.delete<CustomResponse>(
-            `${localApi}client/${id}/?IsConfirmedDelete=true`
+            `${prodApi}client/${id}/?IsConfirmedDelete=true`
         );
         return remove;
     }

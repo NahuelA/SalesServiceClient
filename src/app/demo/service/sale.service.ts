@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { SaleDto } from "../contracts/Dtos/saleDto";
 import { CustomResponse } from "../contracts/response";
 import { Observable, Subject, tap } from "rxjs";
-import { localApi } from "src/app/layout/urlservice";
+import { prodApi } from "src/app/layout/urlservice";
 
 @Injectable()
 export class SaleService {
@@ -16,7 +16,7 @@ export class SaleService {
     }
 
     get(limit: number): Observable<CustomResponse> {
-        const sale = this.http.get<CustomResponse>(`${localApi}sale`);
+        const sale = this.http.get<CustomResponse>(`${prodApi}sale`);
         return sale;
     }
 
@@ -24,25 +24,25 @@ export class SaleService {
         let sale: any;
 
         if (dni === 0) {
-            sale = this.http.get<CustomResponse>(`${localApi}sale`);
+            sale = this.http.get<CustomResponse>(`${prodApi}sale`);
             return sale;
         }
 
         sale = this.http
-            .get<CustomResponse>(`${localApi}sale/filterByEmployees/${dni}`);
+            .get<CustomResponse>(`${prodApi}sale/filterByEmployees/${dni}`);
 
         return sale;
     }
 
     add(sale: SaleDto): Observable<CustomResponse> {
-        const newSale = this.http.post<CustomResponse>(`${localApi}sale`, sale);
+        const newSale = this.http.post<CustomResponse>(`${prodApi}sale`, sale);
 
         return newSale;
     }
 
     delete(id): Observable<CustomResponse> {
         const remove = this.http.delete<CustomResponse>(
-            `${localApi}sale/${id}/?IsConfirmedDelete=true`
+            `${prodApi}sale/${id}/?IsConfirmedDelete=true`
         );
 
         return remove;
@@ -50,7 +50,7 @@ export class SaleService {
 
     update(sale: SaleDto, id: number): Observable<CustomResponse> {
         const newSale = this.http.put<CustomResponse>(
-            `${localApi}sale/${id}`,
+            `${prodApi}sale/${id}`,
             sale
         );
 
@@ -62,7 +62,7 @@ export class SaleService {
         nextPaymentDate: Date | string
     ): Observable<CustomResponse> {
         const markAsPaid = this.http.put<CustomResponse>(
-            `${localApi}sale/markAsPaid/${id}`,
+            `${prodApi}sale/markAsPaid/${id}`,
             nextPaymentDate
         );
 
@@ -74,7 +74,7 @@ export class SaleService {
         date: Date | string
     ): Observable<CustomResponse> {
         const changePaymentDate = this.http.put<CustomResponse>(
-            `${localApi}sale/changePaymentDate/${id}`,
+            `${prodApi}sale/changePaymentDate/${id}`,
             date
         );
         return changePaymentDate;

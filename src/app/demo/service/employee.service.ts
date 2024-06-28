@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { Employee } from "../contracts/employee";
 import { CustomResponse } from "../contracts/response";
 import { Observable, Subject, tap } from "rxjs";
-import { localApi } from "src/app/layout/urlservice";
+import { prodApi } from "src/app/layout/urlservice";
 
 @Injectable()
 export class EmployeeService {
@@ -16,23 +16,23 @@ export class EmployeeService {
     }
 
     get(): Observable<CustomResponse> {
-        const res = this.http.get<CustomResponse>(`${localApi}employee/`);
+        const res = this.http.get<CustomResponse>(`${prodApi}employee/`);
         return res;
     }
 
     getEmployeeByDni(dni: number): Observable<CustomResponse> {
-        const res = this.http.get<CustomResponse>(`${localApi}employee/${dni}`);
+        const res = this.http.get<CustomResponse>(`${prodApi}employee/${dni}`);
         return res;
     }
 
     getEmployeesForMenu(limit: number): Observable<CustomResponse> {
-        const res = this.http.get<CustomResponse>(`${localApi}employee`);
+        const res = this.http.get<CustomResponse>(`${prodApi}employee`);
         return res;
     }
 
     add(employee: Employee): Observable<CustomResponse> {
         const post = this.http
-            .post<CustomResponse>(`${localApi}employee/`, employee)
+            .post<CustomResponse>(`${prodApi}employee/`, employee)
             .pipe(
                 tap(() => {
                     this._refresh$.next();
@@ -43,7 +43,7 @@ export class EmployeeService {
 
     update(employee: Employee): Observable<CustomResponse> {
         const put = this.http.put<CustomResponse>(
-            `${localApi}employee/${employee.employeeId}`,
+            `${prodApi}employee/${employee.employeeId}`,
             employee
         );
         return put;
@@ -52,7 +52,7 @@ export class EmployeeService {
     delete(employee: Employee): Observable<CustomResponse> {
         const remove = this.http
             .delete<CustomResponse>(
-                `${localApi}employee/${employee.employeeId}/?=IsConfirmedDelete=true`
+                `${prodApi}employee/${employee.employeeId}/?=IsConfirmedDelete=true`
             )
             .pipe(
                 tap(() => {
