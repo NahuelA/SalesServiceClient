@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { Customer } from "../contracts/customer";
 import { BaseResponse } from "../contracts/response";
 import { Observable, Subject, tap } from "rxjs";
-import { localApi } from "src/app/layout/urlservice";
+import { prodApi } from "src/app/layout/urlservice";
 
 @Injectable()
 export class CustomerService {
@@ -17,21 +17,21 @@ export class CustomerService {
 
     get(): Observable<BaseResponse<Customer[]>> {
         const res = this.http.get<BaseResponse<Customer[]>>(
-            `${localApi}client/`
+            `${prodApi}client/`
         );
         return res;
     }
 
     getByDni(dni: number): Observable<BaseResponse<Customer>> {
         const res = this.http.get<BaseResponse<Customer>>(
-            `${localApi}client/${dni}`
+            `${prodApi}client/${dni}`
         );
         return res;
     }
 
     add(customer: Customer): Observable<BaseResponse<string>> {
         const post = this.http
-            .post<BaseResponse<string>>(`${localApi}client/`, customer)
+            .post<BaseResponse<string>>(`${prodApi}client/`, customer)
             .pipe(
                 tap(() => {
                     this._refresh$.next();
@@ -42,7 +42,7 @@ export class CustomerService {
 
     update(customer: Customer): Observable<BaseResponse<string>> {
         const put = this.http.put<BaseResponse<string>>(
-            `${localApi}client/${customer.dni}`,
+            `${prodApi}client/${customer.dni}`,
             customer
         );
         return put;
@@ -50,7 +50,7 @@ export class CustomerService {
 
     delete(dni: number): Observable<BaseResponse<string>> {
         const remove = this.http.delete<BaseResponse<string>>(
-            `${localApi}client/${dni}/`
+            `${prodApi}client/${dni}/`
         );
         return remove;
     }

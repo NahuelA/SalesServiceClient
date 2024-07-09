@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { Product } from "../contracts/product";
 import { BaseResponse } from "../contracts/response";
 import { Observable, Subject, tap } from "rxjs";
-import { localApi } from "src/app/layout/urlservice";
+import { prodApi } from "src/app/layout/urlservice";
 
 @Injectable()
 export class ProductService {
@@ -17,21 +17,21 @@ export class ProductService {
 
     get(): Observable<BaseResponse<Product[]>> {
         const res = this.http.get<BaseResponse<Product[]>>(
-            `${localApi}product`
+            `${prodApi}product`
         );
         return res;
     }
 
     getByCode(code: string): Observable<BaseResponse<Product>> {
         const res = this.http.get<BaseResponse<Product>>(
-            `${localApi}product/${code}`
+            `${prodApi}product/${code}`
         );
         return res;
     }
 
     add(product: Product): Observable<BaseResponse<string>> {
         const post = this.http
-            .post<BaseResponse<string>>(`${localApi}product`, product)
+            .post<BaseResponse<string>>(`${prodApi}product`, product)
             ?.pipe(
                 tap(() => {
                     this._refresh$.next();
@@ -42,7 +42,7 @@ export class ProductService {
 
     delete(code: string): Observable<BaseResponse<string>> {
         const remove = this.http.delete<BaseResponse<string>>(
-            `${localApi}product/${code}`
+            `${prodApi}product/${code}`
         );
 
         return remove;
@@ -53,7 +53,7 @@ export class ProductService {
         product: Product
     ): Observable<BaseResponse<string>> {
         const put = this.http.put<BaseResponse<string>>(
-            `${localApi}product/${productId}`,
+            `${prodApi}product/${productId}`,
             product
         );
 

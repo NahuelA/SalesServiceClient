@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { Employee } from "../contracts/employee";
 import { BaseResponse } from "../contracts/response";
 import { BehaviorSubject, Observable, Subject, tap } from "rxjs";
-import { localApi } from "src/app/layout/urlservice";
+import { prodApi } from "src/app/layout/urlservice";
 import { em } from "@fullcalendar/core/internal-common";
 
 @Injectable()
@@ -25,7 +25,7 @@ export class EmployeeService {
 
     get(): Observable<BaseResponse<Employee[]>> {
         this.http
-            .get<BaseResponse<Employee[]>>(`${localApi}employee/`)
+            .get<BaseResponse<Employee[]>>(`${prodApi}employee/`)
             .subscribe({
                 next: (employee) => {
                     this.employeesSubject.next(employee);
@@ -40,14 +40,14 @@ export class EmployeeService {
 
     getEmployeeByDni(dni: number): Observable<BaseResponse<Employee>> {
         const res = this.http.get<BaseResponse<Employee>>(
-            `${localApi}employee/${dni}`
+            `${prodApi}employee/${dni}`
         );
         return res;
     }
 
     getEmployeesForMenu(limit: number): Observable<BaseResponse<Employee[]>> {
         const res = this.http
-            .get<BaseResponse<Employee[]>>(`${localApi}employee`)
+            .get<BaseResponse<Employee[]>>(`${prodApi}employee`)
             .subscribe({
                 next: (employee) => {
                     this.employeesSubject.next(employee);
@@ -62,7 +62,7 @@ export class EmployeeService {
 
     add(employee: Employee): Observable<BaseResponse<string>> {
         const post = this.http
-            .post<BaseResponse<string>>(`${localApi}employee/`, employee)
+            .post<BaseResponse<string>>(`${prodApi}employee/`, employee)
             .pipe(
                 tap(() => {
                     this._refresh$.next();
@@ -80,7 +80,7 @@ export class EmployeeService {
 
     update(employee: Employee): Observable<BaseResponse<string>> {
         const put = this.http.put<BaseResponse<string>>(
-            `${localApi}employee/${employee.employeeId}`,
+            `${prodApi}employee/${employee.employeeId}`,
             employee
         );
         return put;
@@ -89,7 +89,7 @@ export class EmployeeService {
     delete(employee: Employee): Observable<BaseResponse<string>> {
         const remove = this.http
             .delete<BaseResponse<string>>(
-                `${localApi}employee/${employee.dni}/`
+                `${prodApi}employee/${employee.dni}/`
             )
             .pipe(
                 tap(() => {
