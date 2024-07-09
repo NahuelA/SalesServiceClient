@@ -4,7 +4,7 @@ import { MessageService, ConfirmationService } from "primeng/api";
 import { PaymentService } from "../../service/payment.service";
 import { Payment } from "../../contracts/payment";
 import { PaymentDto } from "../../contracts/Dtos/paymentDto";
-import { CustomResponse } from "../../contracts/response";
+import { BaseResponse } from "../../contracts/response";
 import { Subscription } from "rxjs";
 
 @Component({
@@ -18,9 +18,11 @@ export class PaymentComponent implements OnInit {
 
     payments?: Payment[] = [];
     paymentDto: PaymentDto;
+    payment: Payment;
 
     submitted: boolean = false;
     dialog: boolean = false;
+    deleteDialog: boolean = false;
 
     selectedPayment: Payment = {};
 
@@ -56,19 +58,17 @@ export class PaymentComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        this._paymentService.get().subscribe((payments: CustomResponse) => {
-            this.payments = payments.result as Payment[];
+        this._paymentService.get().subscribe((payments) => {
+            this.payments = payments.data;
             this.loading = false;
         });
 
         this._routeSubscription = this._paymentService.refresh$.subscribe(
             () => {
-                this._paymentService
-                    .get()
-                    .subscribe((payments: CustomResponse) => {
-                        this.payments = payments.result as Payment[];
-                        this.loading = false;
-                    });
+                this._paymentService.get().subscribe((payments) => {
+                    this.payments = payments.data;
+                    this.loading = false;
+                });
             }
         );
     }
@@ -100,65 +100,65 @@ export class PaymentComponent implements OnInit {
         this.submitted = false;
     }
 
+    displayDeleteDialog(payment: Payment) {
+        this.deleteDialog = true;
+        this.payment = payment;
+    }
+
+    hideDeleteDialog() {
+        this.deleteDialog = false;
+        this.payment = {};
+    }
+
     saveProduct() {
         this.submitted = false;
         this.dialog = false;
 
-        this._paymentService
-            .add(this.paymentDto)
-            .subscribe((payment: CustomResponse) => {
+        this._paymentService.add(this.paymentDto).subscribe({
+            next: (payment) => {
                 this.messageService.add({
                     severity: "success",
-                    summary: "Registro creado con éxito",
-                    detail: payment.result.toString(),
+                    summary: payment.message,
                     life: 3000,
                 });
 
-                if (payment.statusCode === 400)
-                    this.messageService.add({
-                        severity: "error",
-                        summary:
-                            "Hubo un error al registrar el pago, inténtalo de nuevo.",
-                        detail: payment.result.toString(),
-                        life: 3000,
-                    });
-            });
+                console.log(payment);
+            },
+            error: ({ error }: any) => {
+                this.messageService.add({
+                    severity: "error",
+                    summary: error.message,
+                    life: 3000,
+                });
+            },
+        });
+    }
 
-        // if (this.employee.username) {
-        //     if (this.product.id) {
-        //         // @ts-ignore
-        //         this.product.inventoryStatus = this.product.inventoryStatus
-        //             .value
-        //             ? this.product.inventoryStatus.value
-        //             : this.product.inventoryStatus;
-        //         this.products[this.findIndexById(this.product.id)] =
-        //             this.product;
-        //         this.messageService.add({
-        //             severity: "success",
-        //             summary: "Successful",
-        //             detail: "Product Updated",
-        //             life: 3000,
-        //         });
-        //     } else {
-        //         this.product.id = this.createId();
-        //         this.product.code = this.createId();
-        //         this.product.image = "product-placeholder.svg";
-        //         // @ts-ignore
-        //         this.product.inventoryStatus = this.product.inventoryStatus
-        //             ? this.product.inventoryStatus.value
-        //             : "INSTOCK";
-        //         this.products.push(this.product);
-        //         this.messageService.add({
-        //             severity: "success",
-        //             summary: "Successful",
-        //             detail: "Product Created",
-        //             life: 3000,
-        //         });
-        //     }
+    remove() {
+        this.deleteDialog = false;
 
-        //     this.products = [...this.products];
-        //     this.productDialog = false;
-        //     this.product = {};
-        // }
+        this._paymentService.delete(this.payment.code).subscribe({
+            next: (payment) => {
+                this.messageService.add({
+                    severity: "success",
+                    summary: payment.message,
+                    life: 3000,
+                });
+
+                this._paymentService.get().subscribe((payments) => {
+                    this.payments = payments.data;
+                    this.loading = false;
+                });
+            },
+            error: ({ error }: any) => {
+                this.messageService.add({
+                    severity: "error",
+                    summary: error.message,
+                    life: 3000,
+                });
+            },
+        });
+
+        this.payment = {};
     }
 }

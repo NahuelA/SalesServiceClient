@@ -10,8 +10,9 @@ import { MessageService, ConfirmationService } from "primeng/api";
 import { EmployeeService } from "src/app/demo/service/employee.service";
 
 import { Employee } from "src/app/demo/contracts/employee";
-import { CustomResponse } from "../../contracts/response";
+import { BaseResponse } from "../../contracts/response";
 import { Subscription } from "rxjs";
+import { em } from "@fullcalendar/core/internal-common";
 
 @Component({
     templateUrl: "./employee.component.html",
@@ -45,8 +46,8 @@ export class EmployeeComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit() {
-        this._employeeService.get().subscribe((employees: CustomResponse) => {
-            this.employees = employees.result as Employee[];
+        this._employeeService.get().subscribe((employees) => {
+            this.employees = employees.data;
             this.loading = false;
         });
 
@@ -62,12 +63,10 @@ export class EmployeeComponent implements OnInit, OnDestroy {
 
         this._routeSubscription = this._employeeService.refresh$.subscribe(
             () => {
-                this._employeeService
-                    .get()
-                    .subscribe((employees: CustomResponse) => {
-                        this.employees = employees.result as Employee[];
-                        this.loading = false;
-                    });
+                this._employeeService.get().subscribe((employees) => {
+                    this.employees = employees.data;
+                    this.loading = false;
+                });
             }
         );
     }
@@ -126,24 +125,19 @@ export class EmployeeComponent implements OnInit, OnDestroy {
             next: (employee) => {
                 this.messageService.add({
                     severity: "success",
-                    summary: "Registro actualizado con éxito",
-                    detail: employee.result?.toString(),
+                    summary: employee.message,
                     life: 3000,
                 });
 
                 this.employee = {};
             },
 
-            error: (error) => {
+            error: ({ error }: any) => {
                 this.messageService.add({
                     severity: "error",
-                    summary:
-                        "Hubo un error al actualizar al empleado, inténtalo de nuevo.",
-                    detail: error.result?.toString(),
+                    summary: error.message,
                     life: 3000,
                 });
-
-                console.log(error);
             },
         });
     }
@@ -155,22 +149,19 @@ export class EmployeeComponent implements OnInit, OnDestroy {
             next: (employee) => {
                 this.messageService.add({
                     severity: "success",
-                    summary: "Registro eliminado con éxito",
-                    detail: employee.result?.toString(),
+                    summary: employee.message,
                     life: 3000,
                 });
 
                 this._employeeService.get().subscribe((employees) => {
-                    this.employees = employees.result as Employee[];
+                    this.employees = employees.data;
                     this.loading = false;
                 });
             },
-            error: (error) => {
+            error: ({ error }: any) => {
                 this.messageService.add({
                     severity: "error",
-                    summary:
-                        "Hubo un error al eliminar al empleado, inténtalo de nuevo.",
-                    detail: error?.error?.result?.toString(),
+                    summary: error.message,
                     life: 3000,
                 });
             },
@@ -189,19 +180,16 @@ export class EmployeeComponent implements OnInit, OnDestroy {
             next: (employee) => {
                 this.messageService.add({
                     severity: "success",
-                    summary: "Registro creado con éxito",
-                    detail: employee.result?.toString(),
+                    summary: employee.message,
                     life: 3000,
                 });
                 this.employee = {};
             },
 
-            error: (error) => {
+            error: ({ error }: any) => {
                 this.messageService.add({
                     severity: "error",
-                    summary:
-                        "Hubo un error al registrar al empleado, inténtalo de nuevo.",
-                    detail: error.result?.toString(),
+                    summary: error.message,
                     life: 3000,
                 });
             },

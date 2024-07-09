@@ -176,20 +176,13 @@
                             "
                         >
                             <button
-                                title="Editar registro"
-                                pButton
-                                pRipple
-                                type="button"
-                                icon="pi pi-pencil"
-                                class="p-button-rounded p-button-primary p-button-outlined"
-                            ></button>
-                            <button
                                 title="Eliminar registro"
                                 style="margin-left: 5px"
                                 pButton
                                 pRipple
                                 type="button"
                                 icon="pi pi-trash"
+                                (click)="displayDeleteDialog(payment)"
                                 class="p-button-rounded p-button-danger p-button-outlined"
                             ></button>
                         </td>
@@ -253,6 +246,8 @@
                     </tr>
                 </ng-template>
             </p-table>
+
+            <!-- Add new payment -->
             <p-dialog
                 [(visible)]="dialog"
                 [style]="{ width: '450px' }"
@@ -454,6 +449,45 @@
                         icon="pi pi-check"
                         class="p-button-text"
                         (click)="saveProduct()"
+                    ></button>
+                </ng-template>
+            </p-dialog>
+
+            <!-- Delete dialog -->
+            <!-- Delete product dialog -->
+            <p-dialog
+                [(visible)]="deleteDialog"
+                header="Confirmar"
+                [modal]="true"
+                [style]="{ width: '450px' }"
+            >
+                <div class="flex align-items-center justify-content-center">
+                    <i
+                        class="pi pi-exclamation-triangle mr-3"
+                        style="font-size: 2rem"
+                    ></i>
+                    <span *ngIf="payment"
+                        >Estás seguro que quieres eliminar este comprobante con
+                        código : <b>{{ payment?.code }}</b
+                        >?</span
+                    >
+                </div>
+                <ng-template pTemplate="footer">
+                    <button
+                        pButton
+                        pRipple
+                        icon="pi pi-times"
+                        class="p-button-text"
+                        label="Cancelar"
+                        (click)="hideDeleteDialog()"
+                    ></button>
+                    <button
+                        pButton
+                        pRipple
+                        icon="pi pi-check"
+                        class="p-button-text"
+                        label="Confirmar"
+                        (click)="remove()"
                     ></button>
                 </ng-template>
             </p-dialog>

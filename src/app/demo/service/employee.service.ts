@@ -1,13 +1,21 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Employee } from "../contracts/employee";
-import { CustomResponse } from "../contracts/response";
-import { Observable, Subject, tap } from "rxjs";
-import { prodApi } from "src/app/layout/urlservice";
+import { BaseResponse } from "../contracts/response";
+import { BehaviorSubject, Observable, Subject, tap } from "rxjs";
+import { localApi } from "src/app/layout/urlservice";
+import { em } from "@fullcalendar/core/internal-common";
 
 @Injectable()
 export class EmployeeService {
     private _refresh$ = new Subject<void>();
+    private employeesSubject: BehaviorSubject<BaseResponse<Employee[]>> =
+        new BehaviorSubject<BaseResponse<Employee[]>>({
+            isSuccess: true,
+            isFound: true,
+            message: "",
+            data: [],
+        });
 
     constructor(private http: HttpClient) {}
 
@@ -15,44 +23,73 @@ export class EmployeeService {
         return this._refresh$;
     }
 
-    get(): Observable<CustomResponse> {
-        const res = this.http.get<CustomResponse>(`${prodApi}employee/`);
+    get(): Observable<BaseResponse<Employee[]>> {
+        this.http
+            .get<BaseResponse<Employee[]>>(`${localApi}employee/`)
+            .subscribe({
+                next: (employee) => {
+                    this.employeesSubject.next(employee);
+                },
+                error: ({ error }) => {
+                    this.employeesSubject.next(error);
+                },
+            });
+
+        return this.employeesSubject.asObservable();
+    }
+
+    getEmployeeByDni(dni: number): Observable<BaseResponse<Employee>> {
+        const res = this.http.get<BaseResponse<Employee>>(
+            `${localApi}employee/${dni}`
+        );
         return res;
     }
 
-    getEmployeeByDni(dni: number): Observable<CustomResponse> {
-        const res = this.http.get<CustomResponse>(`${prodApi}employee/${dni}`);
-        return res;
+    getEmployeesForMenu(limit: number): Observable<BaseResponse<Employee[]>> {
+        const res = this.http
+            .get<BaseResponse<Employee[]>>(`${localApi}employee`)
+            .subscribe({
+                next: (employee) => {
+                    this.employeesSubject.next(employee);
+                },
+                error: ({ error }) => {
+                    this.employeesSubject.next(error);
+                },
+            });
+
+        return this.employeesSubject.asObservable();
     }
 
-    getEmployeesForMenu(limit: number): Observable<CustomResponse> {
-        const res = this.http.get<CustomResponse>(`${prodApi}employee`);
-        return res;
-    }
-
-    add(employee: Employee): Observable<CustomResponse> {
+    add(employee: Employee): Observable<BaseResponse<string>> {
         const post = this.http
-            .post<CustomResponse>(`${prodApi}employee/`, employee)
+            .post<BaseResponse<string>>(`${localApi}employee/`, employee)
             .pipe(
                 tap(() => {
                     this._refresh$.next();
                 })
             );
+
+        this.employeesSubject.next({
+            isSuccess: true,
+            isFound: true,
+            message: "",
+            data: [],
+        });
         return post;
     }
 
-    update(employee: Employee): Observable<CustomResponse> {
-        const put = this.http.put<CustomResponse>(
-            `${prodApi}employee/${employee.employeeId}`,
+    update(employee: Employee): Observable<BaseResponse<string>> {
+        const put = this.http.put<BaseResponse<string>>(
+            `${localApi}employee/${employee.employeeId}`,
             employee
         );
         return put;
     }
 
-    delete(employee: Employee): Observable<CustomResponse> {
+    delete(employee: Employee): Observable<BaseResponse<string>> {
         const remove = this.http
-            .delete<CustomResponse>(
-                `${prodApi}employee/${employee.employeeId}/?=IsConfirmedDelete=true`
+            .delete<BaseResponse<string>>(
+                `${localApi}employee/${employee.dni}/`
             )
             .pipe(
                 tap(() => {

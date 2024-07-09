@@ -1,9 +1,10 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { SaleDto } from "../contracts/Dtos/saleDto";
-import { CustomResponse } from "../contracts/response";
-import { Observable, Subject, tap } from "rxjs";
-import { prodApi } from "src/app/layout/urlservice";
+import { BaseResponse } from "../contracts/response";
+import { Observable, Subject } from "rxjs";
+import { localApi } from "src/app/layout/urlservice";
+import { Sale } from "../contracts/sale";
 
 @Injectable()
 export class SaleService {
@@ -15,42 +16,49 @@ export class SaleService {
         return this._refresh$;
     }
 
-    get(limit: number): Observable<CustomResponse> {
-        const sale = this.http.get<CustomResponse>(`${prodApi}sale`);
+    get(limit: number): Observable<BaseResponse<Sale[]>> {
+        const sale = this.http.get<BaseResponse<Sale[]>>(`${localApi}sale`);
         return sale;
     }
 
-    public getBySeller(limit: number, dni: number): Observable<CustomResponse> {
+    public getBySeller(
+        limit: number,
+        dni: number
+    ): Observable<BaseResponse<Sale[]>> {
         let sale: any;
 
         if (dni === 0) {
-            sale = this.http.get<CustomResponse>(`${prodApi}sale`);
+            sale = this.http.get<BaseResponse<Sale[]>>(`${localApi}sale`);
             return sale;
         }
 
-        sale = this.http
-            .get<CustomResponse>(`${prodApi}sale/filterByEmployees/${dni}`);
+        sale = this.http.get<BaseResponse<Sale[]>>(
+            `${localApi}sale/filterByEmployees/${dni}`
+        );
 
         return sale;
     }
 
-    add(sale: SaleDto): Observable<CustomResponse> {
-        const newSale = this.http.post<CustomResponse>(`${prodApi}sale`, sale);
+    add(sale: SaleDto): Observable<BaseResponse<string>> {
+        const newSale = this.http.post<BaseResponse<string>>(
+            `${localApi}sale`,
+            sale
+        );
 
         return newSale;
     }
 
-    delete(id): Observable<CustomResponse> {
-        const remove = this.http.delete<CustomResponse>(
-            `${prodApi}sale/${id}/?IsConfirmedDelete=true`
+    delete(saleId: number): Observable<BaseResponse<string>> {
+        const remove = this.http.delete<BaseResponse<string>>(
+            `${localApi}sale/${saleId}/`
         );
 
         return remove;
     }
 
-    update(sale: SaleDto, id: number): Observable<CustomResponse> {
-        const newSale = this.http.put<CustomResponse>(
-            `${prodApi}sale/${id}`,
+    update(sale: SaleDto, saleId: number): Observable<BaseResponse<string>> {
+        const newSale = this.http.put<BaseResponse<string>>(
+            `${localApi}sale/${saleId}`,
             sale
         );
 
@@ -58,11 +66,11 @@ export class SaleService {
     }
 
     markAsPaid(
-        id: number,
+        saleId: number,
         nextPaymentDate: Date | string
-    ): Observable<CustomResponse> {
-        const markAsPaid = this.http.put<CustomResponse>(
-            `${prodApi}sale/markAsPaid/${id}`,
+    ): Observable<BaseResponse<string>> {
+        const markAsPaid = this.http.put<BaseResponse<string>>(
+            `${localApi}sale/markAsPaid/${saleId}`,
             nextPaymentDate
         );
 
@@ -70,11 +78,11 @@ export class SaleService {
     }
 
     changePaymentDate(
-        id: number,
+        saleId: number,
         date: Date | string
-    ): Observable<CustomResponse> {
-        const changePaymentDate = this.http.put<CustomResponse>(
-            `${prodApi}sale/changePaymentDate/${id}`,
+    ): Observable<BaseResponse<string>> {
+        const changePaymentDate = this.http.put<BaseResponse<string>>(
+            `${localApi}sale/changePaymentDate/${saleId}`,
             date
         );
         return changePaymentDate;

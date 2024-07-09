@@ -14,6 +14,7 @@ export class AppMenuComponent implements OnInit {
     employees: Employee[] = [];
     employeeMenuTarget: MenuItems = {};
     employeeMenu: [MenuItems] = [{}];
+    counter: number = 0;
 
     constructor(
         public layoutService: LayoutService,
@@ -48,6 +49,16 @@ export class AppMenuComponent implements OnInit {
                         routerLink: ["/clientes/"],
                     },
                     {
+                        label: "Productos",
+                        icon: "pi pi-fw pi-box",
+                        routerLink: ["/productos/"],
+                    },
+                    {
+                        label: "Comprobantes",
+                        icon: "pi pi-fw pi-file",
+                        routerLink: ["/comprobantes/"],
+                    },
+                    {
                         label: "Ventas",
                         icon: "pi pi-fw pi-cart-plus",
                         routerLink: ["/ventas/"],
@@ -57,16 +68,20 @@ export class AppMenuComponent implements OnInit {
         ];
 
         this._employeeService.get().subscribe((employee) => {
-            this.employees = employee?.result as Employee[];
+            this.employees = employee?.data;
 
-            this.employees.map((emp) => {
+            this.employees.map((emp, i) => {
                 this.employeeMenuTarget.label = emp?.name;
                 this.employeeMenuTarget.icon = "pi pi-fw pi-bookmark";
                 this.employeeMenuTarget.routerLink = [`/ventas/${emp?.dni}`];
 
-                this.employeeMenu?.push({ ...this.employeeMenuTarget });
+                if (this.counter == 0) this.employeeMenu.shift();
+
+                if (this.counter < this.employees.length) {
+                    this.employeeMenu?.push({ ...this.employeeMenuTarget });
+                }
+                this.counter++;
             });
-            this.employeeMenu?.shift();
         });
 
         this.model.push({

@@ -1,9 +1,9 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Product } from "../contracts/product";
-import { CustomResponse } from "../contracts/response";
+import { BaseResponse } from "../contracts/response";
 import { Observable, Subject, tap } from "rxjs";
-import { prodApi } from "src/app/layout/urlservice";
+import { localApi } from "src/app/layout/urlservice";
 
 @Injectable()
 export class ProductService {
@@ -15,49 +15,48 @@ export class ProductService {
         return this._refresh$;
     }
 
-    get(): Observable<any> {
-        const res = this.http.get<CustomResponse>(`${prodApi}product`);
+    get(): Observable<BaseResponse<Product[]>> {
+        const res = this.http.get<BaseResponse<Product[]>>(
+            `${localApi}product`
+        );
         return res;
     }
 
-    add(product: Product): Observable<any> {
-        const post = this.http.post(`${prodApi}product`, product)?.pipe(
-            tap(() => {
-                this._refresh$.next();
-            })
+    getByCode(code: string): Observable<BaseResponse<Product>> {
+        const res = this.http.get<BaseResponse<Product>>(
+            `${localApi}product/${code}`
         );
+        return res;
+    }
+
+    add(product: Product): Observable<BaseResponse<string>> {
+        const post = this.http
+            .post<BaseResponse<string>>(`${localApi}product`, product)
+            ?.pipe(
+                tap(() => {
+                    this._refresh$.next();
+                })
+            );
         return post;
     }
 
-    getProductsSmall() {
-        return this.http
-            .get<any>("assets/demo/data/products-small.json")
-            .toPromise()
-            .then((res) => res.data as Product[])
-            .then((data) => data);
+    delete(code: string): Observable<BaseResponse<string>> {
+        const remove = this.http.delete<BaseResponse<string>>(
+            `${localApi}product/${code}`
+        );
+
+        return remove;
     }
 
-    getProducts() {
-        return this.http
-            .get<any>("assets/demo/data/products.json")
-            .toPromise()
-            .then((res) => res.data as Product[])
-            .then((data) => data);
-    }
+    update(
+        productId: string,
+        product: Product
+    ): Observable<BaseResponse<string>> {
+        const put = this.http.put<BaseResponse<string>>(
+            `${localApi}product/${productId}`,
+            product
+        );
 
-    getProductsMixed() {
-        return this.http
-            .get<any>("assets/demo/data/products-mixed.json")
-            .toPromise()
-            .then((res) => res.data as Product[])
-            .then((data) => data);
-    }
-
-    getProductsWithOrdersSmall() {
-        return this.http
-            .get<any>("assets/demo/data/products-orders-small.json")
-            .toPromise()
-            .then((res) => res.data as Product[])
-            .then((data) => data);
+        return put;
     }
 }

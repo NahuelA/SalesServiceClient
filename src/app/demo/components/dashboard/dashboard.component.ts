@@ -4,7 +4,7 @@ import { Subscription, debounceTime } from "rxjs";
 import { LayoutService } from "src/app/layout/service/app.layout.service";
 import { SaleService } from "../../service/sale.service";
 import { Sale } from "../../contracts/sale";
-import { CustomResponse } from "../../contracts/response";
+import { BaseResponse } from "../../contracts/response";
 import { ProfitService } from "../../service/profit.service";
 
 @Component({
@@ -58,7 +58,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.salesService.get(this.limit).subscribe((data: CustomResponse) => {
+        this.salesService.get(this.limit).subscribe((data: any) => {
             this.sales = data.result as Sale[];
             console.log(this.sales);
         });

@@ -1,6 +1,5 @@
 import { RouterModule } from "@angular/router";
 import { NgModule } from "@angular/core";
-import { NotfoundComponent } from "./demo/components/notfound/notfound.component";
 import { AppLayoutComponent } from "./layout/app.layout.component";
 
 @NgModule({
@@ -40,7 +39,7 @@ import { AppLayoutComponent } from "./layout/app.layout.component";
                                 ).then((m) => m.ProductModule),
                         },
                         {
-                            path: "pagos",
+                            path: "comprobantes",
                             loadChildren: () =>
                                 import(
                                     "./demo/components/payments/payment.module"
@@ -53,13 +52,6 @@ import { AppLayoutComponent } from "./layout/app.layout.component";
                                     "./demo/components/sales/sale.module"
                                 ).then((m) => m.SaleModule),
                         },
-                        {
-                            path: "pages",
-                            loadChildren: () =>
-                                import(
-                                    "./demo/components/pages/pages.module"
-                                ).then((m) => m.PagesModule),
-                        },
                     ],
                 },
                 {
@@ -69,7 +61,6 @@ import { AppLayoutComponent } from "./layout/app.layout.component";
                             (m) => m.AuthModule
                         ),
                 },
-                { path: "notfound", component: NotfoundComponent },
                 { path: "**", redirectTo: "/notfound" },
             ],
             {

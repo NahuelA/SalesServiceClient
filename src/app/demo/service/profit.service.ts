@@ -1,8 +1,8 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { CustomResponse } from "../contracts/response";
+import { BaseResponse } from "../contracts/response";
 import { Observable, Subject, tap } from "rxjs";
-import { prodApi } from "src/app/layout/urlservice";
+import { localApi } from "src/app/layout/urlservice";
 
 @Injectable()
 export class ProfitService {
@@ -14,9 +14,9 @@ export class ProfitService {
         return this._refresh$;
     }
 
-    get(year: number): Observable<CustomResponse> {
+    get(year: number): Observable<BaseResponse<any>> {
         const res = this.http
-            .get<CustomResponse>(`${prodApi}dashboard/?year=${year}`)
+            .get<BaseResponse<any>>(`${localApi}dashboard/?year=${year}`)
             .pipe(
                 tap(() => {
                     this._refresh$.next();
@@ -26,10 +26,10 @@ export class ProfitService {
         return res;
     }
 
-    getEmployeeOverview(dni: number, year: number): Observable<CustomResponse> {
+    getEmployeeOverview(dni: number, year: number): Observable<BaseResponse<any>> {
         const res = this.http
-            .get<CustomResponse>(
-                `${prodApi}dashboard/employee/${dni}/${year}`
+            .get<BaseResponse<any>>(
+                `${localApi}dashboard/employee/${dni}/${year}`
             )
             .pipe(
                 tap(() => {

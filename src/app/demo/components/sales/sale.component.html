@@ -2,6 +2,7 @@
 <div class="grid">
     <div class="col-12">
         <div class="card">
+            <p-toast></p-toast>
             <div [style]="{ display: 'flex', alignItems: 'center' }">
                 <h5 [style]="{ margin: 'auto 0' }">{{ title }}</h5>
 
@@ -67,6 +68,7 @@
                 <!-- Headers -->
                 <ng-template pTemplate="header">
                     <tr>
+                        <!-- Opt -->
                         <th style="min-width: 12rem">
                             <div
                                 class="flex justify-content-between align-items-center"
@@ -74,6 +76,8 @@
                                 Opt
                             </div>
                         </th>
+
+                        <!-- Date -->
                         <th style="min-width: 8rem">
                             <div
                                 class="flex justify-content-between align-items-center"
@@ -87,6 +91,8 @@
                                 />
                             </div>
                         </th>
+
+                        <!-- Client -->
                         <th style="min-width: 8rem">
                             <div
                                 class="flex justify-content-between align-items-center"
@@ -100,6 +106,8 @@
                                 ></p-columnFilter>
                             </div>
                         </th>
+
+                        <!-- Payment date -->
                         <th style="min-width: 8rem">
                             <div
                                 class="flex justify-content-between align-items-center"
@@ -107,6 +115,8 @@
                                 Fecha de pago
                             </div>
                         </th>
+
+                        <!-- Change date -->
                         <th style="min-width: 8rem">
                             <div
                                 class="flex justify-content-between align-items-center"
@@ -114,6 +124,8 @@
                                 Cambio de fecha
                             </div>
                         </th>
+
+                        <!-- Product desc -->
                         <th style="min-width: 8rem">
                             <div
                                 class="flex justify-content-between align-items-center"
@@ -121,6 +133,17 @@
                                 Descripción del producto
                             </div>
                         </th>
+
+                        <!-- Product code -->
+                        <th style="min-width: 8rem">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                Código P
+                            </div>
+                        </th>
+
+                        <!-- Amount -->
                         <th style="min-width: 8rem">
                             <div
                                 class="flex justify-content-between align-items-center"
@@ -128,6 +151,17 @@
                                 Cantidad
                             </div>
                         </th>
+
+                        <!-- Spot -->
+                        <th style="min-width: 8rem">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                Contado
+                            </div>
+                        </th>
+
+                        <!-- Fee -->
                         <th style="min-width: 8rem">
                             <div
                                 class="flex justify-content-between align-items-center"
@@ -135,6 +169,8 @@
                                 Cuota
                             </div>
                         </th>
+
+                        <!-- Guarantor -->
                         <th style="min-width: 8rem">
                             <div
                                 class="flex justify-content-between align-items-center"
@@ -148,6 +184,8 @@
                                 ></p-columnFilter>
                             </div>
                         </th>
+
+                        <!-- Fee collected -->
                         <th style="min-width: 8rem">
                             <div
                                 class="flex justify-content-between align-items-center"
@@ -155,6 +193,8 @@
                                 Cuotas cobradas
                             </div>
                         </th>
+
+                        <!-- All fees -->
                         <th style="min-width: 8rem">
                             <div
                                 class="flex justify-content-between align-items-center"
@@ -162,6 +202,8 @@
                                 Total de cuotas
                             </div>
                         </th>
+
+                        <!-- Change dates list -->
                         <th style="min-width: 8rem">
                             <div
                                 class="flex justify-content-between align-items-center"
@@ -204,6 +246,7 @@
                                 (click)="openRemoveDialog(sale)"
                                 class="p-button-rounded p-button-danger p-button-outlined"
                             ></button>
+
                             <!-- Open for pay fee -->
                             <button
                                 title="Marcar como cuota del mes pagada"
@@ -220,6 +263,7 @@
                                 icon="pi pi-check"
                                 class="p-button-rounded p-button-success p-button-outlined"
                             ></button>
+
                             <!-- Pay fee toast -->
                             <div>
                                 <p-toast></p-toast>
@@ -250,7 +294,7 @@
                             </div>
                         </td>
                         <td>
-                            {{ sale?.date | date : ["d/M/yy"] }}
+                            {{ sale?.date | date : ["MMM d, y"] }}
                         </td>
                         <!-- See client -->
                         <td
@@ -271,17 +315,24 @@
                                 title="Ver cliente"
                             ></button>
                         </td>
+
                         <td>
-                            {{ sale?.paymentDate | date : ["d/M/yy"] }}
+                            {{ sale?.paymentDate | date : ["MMM d, y"] }}
                         </td>
                         <td>
-                            {{ sale?.newPaymentDate | date : ["d/M/yy"] }}
+                            {{ sale?.newPaymentDate | date : ["MMM d, y"] }}
                         </td>
                         <td>
                             {{ sale?.productDescription }}
                         </td>
                         <td>
+                            {{ sale?.code }}
+                        </td>
+                        <td>
                             {{ sale?.amount }}
+                        </td>
+                        <td>
+                            {{ sale?.spot }}
                         </td>
                         <td>
                             {{ sale?.fee }}
@@ -351,6 +402,7 @@
                         <td colspan="8">No se han registrado ventas.</td>
                     </tr>
                 </ng-template>
+
                 <!-- Loading body -->
                 <ng-template pTemplate="loadingbody">
                     <tr>
@@ -403,6 +455,7 @@
                             >El dni es requerido.</small
                         >
                     </div>
+
                     <!-- Client Dni -->
                     <div class="field">
                         <label for="cdni">Dni cliente</label>
@@ -434,6 +487,7 @@
                             (click)="openForAddCustomer()"
                         ></button>
                     </div>
+
                     <!-- Guarantor Dni -->
                     <div class="field">
                         <label for="gdni">Dni garante</label>
@@ -455,6 +509,7 @@
                             >El dni es requerido.</small
                         >
                     </div>
+
                     <!-- Guarantor Name -->
                     <div class="field">
                         <label for="gname">Nombre garante</label>
@@ -476,6 +531,7 @@
                             >El nombre es requerido.</small
                         >
                     </div>
+
                     <!-- Guarantor Address -->
                     <div class="field">
                         <label for="gaddress">Dirección garante</label>
@@ -497,6 +553,7 @@
                             >La dirección es requerida.</small
                         >
                     </div>
+
                     <!-- Product description -->
                     <div class="field">
                         <label for="productDesc">Descripción de producto</label>
@@ -505,6 +562,7 @@
                             pInputText
                             id="productDesc"
                             [(ngModel)]="saleDto.productDescription"
+                            [value]="product.productName || ''"
                             required
                             autofocus
                             [ngClass]="{
@@ -513,6 +571,27 @@
                             }"
                         />
                     </div>
+
+                    <!-- Product Code -->
+                    <div class="field">
+                        <label for="code">Código de producto</label>
+                        <input
+                            type="text"
+                            pInputText
+                            id="code"
+                            [(ngModel)]="saleDto.code"
+                            (ngModelChange)="getProductByCode()"
+                            required
+                            autofocus
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="!existProduct"
+                            style="color: red"
+                            >{{ this.existProductMsg }}</small
+                        >
+                    </div>
+
                     <!-- Amount -->
                     <div class="field">
                         <label for="amount">Cantidad</label>
@@ -534,6 +613,21 @@
                             >El monto es requerido.</small
                         >
                     </div>
+
+                    <!-- Spot -->
+                    <div class="field">
+                        <label for="spot">Precio al contado</label>
+                        <input
+                            type="number"
+                            pInputText
+                            id="spot"
+                            [(ngModel)]="saleDto.spot"
+                            [value]="product.spotPrice"
+                            required
+                            autofocus
+                        />
+                    </div>
+
                     <!-- Fee -->
                     <div class="field">
                         <label for="amount">Cuota</label>
@@ -542,6 +636,7 @@
                             pInputText
                             id="amount"
                             [(ngModel)]="saleDto.fee"
+                            [value]="product.installmentPrice"
                             required
                             autofocus
                             [ngClass]="{
@@ -554,6 +649,7 @@
                             >La cuota es requerida.</small
                         >
                     </div>
+
                     <!-- Total fees -->
                     <div class="field">
                         <label for="amount">Cantidad de cuotas en total</label>
@@ -562,6 +658,7 @@
                             pInputText
                             id="amount"
                             [(ngModel)]="saleDto.totalFees"
+                            [value]="product.totalFees"
                             required
                             autofocus
                             [ngClass]="{
@@ -575,6 +672,7 @@
                             >El totalFees es requerido.</small
                         >
                     </div>
+
                     <!-- Fees collected -->
                     <div class="field">
                         <label for="amount">Cuotas cobradas</label>
@@ -596,6 +694,7 @@
                             >El feesCollected es requerido.</small
                         >
                     </div>
+
                     <!-- PaymentDate -->
                     <div class="field">
                         <label for="PaymentDate">Fecha de pago</label>
@@ -608,6 +707,7 @@
                             [inline]="true"
                         ></p-calendar>
                     </div>
+
                     <!-- Date -->
                     <div class="field">
                         <label for="date">Fecha</label>
@@ -662,7 +762,7 @@
                             style="margin-top: 5px"
                             type="text"
                             pInputText
-                            placeholder="{{ item | date : ['d/M/yy'] }}"
+                            placeholder="{{ item | date : ['MMM d, y'] }}"
                             readonly
                         />
                     </div>
@@ -885,6 +985,7 @@
                             >El nombre es requerido.</small
                         >
                     </div>
+
                     <!-- Surname -->
                     <div class="field">
                         <label for="surname">Apellido</label>
@@ -906,6 +1007,7 @@
                             >El apellido es requerido.</small
                         >
                     </div>
+
                     <!-- Dni -->
                     <div class="field">
                         <label for="dni">Dni</label>
@@ -927,6 +1029,24 @@
                             >El dni es requerido.</small
                         >
                     </div>
+
+                    <!-- email -->
+                    <div class="field">
+                        <label for="email">Correo</label>
+                        <input
+                            type="email"
+                            pInputText
+                            id="email"
+                            [(ngModel)]="addCustomer.email"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !addCustomer.email
+                            }"
+                        />
+                    </div>
+
                     <!-- phoneNumber -->
                     <div class="field">
                         <label for="phoneNumber">Celular</label>
@@ -948,6 +1068,7 @@
                             >El celular es requerido.</small
                         >
                     </div>
+
                     <!-- address -->
                     <div class="field">
                         <label for="address">Dirección</label>

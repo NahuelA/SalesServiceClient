@@ -4,8 +4,8 @@ import { MessageService, ConfirmationService } from "primeng/api";
 import { CustomerService } from "../../service/customer.service";
 import { Customer } from "../../contracts/customer";
 import { Subscription } from "rxjs";
-import { CustomResponse } from "../../contracts/response";
-import { cu } from "@fullcalendar/core/internal-common";
+import { BaseResponse } from "../../contracts/response";
+import { er } from "@fullcalendar/core/internal-common";
 
 @Component({
     templateUrl: "./client.component.html",
@@ -41,18 +41,16 @@ export class ClientComponent implements OnInit {
 
     ngOnInit() {
         this._customerService.get().subscribe((customers) => {
-            this.customers = customers.result as Customer[];
+            this.customers = customers.data;
             this.loading = false;
         });
 
         this._routeSubscription = this._customerService.refresh$.subscribe(
             () => {
-                this._customerService
-                    .get()
-                    .subscribe((customers: CustomResponse) => {
-                        this.customers = customers.result as Customer[];
-                        this.loading = false;
-                    });
+                this._customerService.get().subscribe((customers) => {
+                    this.customers = customers.data;
+                    this.loading = false;
+                });
             }
         );
     }
@@ -109,19 +107,16 @@ export class ClientComponent implements OnInit {
             next: (customer) => {
                 this.messageService.add({
                     severity: "success",
-                    summary: "Registro actualizado con éxito",
-                    detail: customer.result?.toString(),
+                    summary: customer.message,
                     life: 3000,
                 });
 
                 this.customer = {};
             },
-            error: (error) => {
+            error: ({ error }: any) => {
                 this.messageService.add({
                     severity: "error",
-                    summary:
-                        "Hubo un error al actualizar al cliente, inténtalo de nuevo.",
-                    detail: error?.error?.result?.toString(),
+                    summary: error.message,
                     life: 3000,
                 });
             },
@@ -131,26 +126,23 @@ export class ClientComponent implements OnInit {
     remove() {
         this.deleteDialog = false;
 
-        this._customerService.delete(this.customer.clientId).subscribe({
+        this._customerService.delete(this.customer.dni).subscribe({
             next: (customer) => {
                 this.messageService.add({
                     severity: "success",
-                    summary: "Registro eliminado con éxito",
-                    detail: customer.result?.toString(),
+                    summary: customer.message,
                     life: 3000,
                 });
 
                 this._customerService.get().subscribe((customers) => {
-                    this.customers = customers.result as Customer[];
+                    this.customers = customers.data;
                     this.loading = false;
                 });
             },
-            error: (error) => {
+            error: ({ error }: any) => {
                 this.messageService.add({
                     severity: "error",
-                    summary:
-                        "Hubo un error al eliminar al cliente, inténtalo de nuevo.",
-                    detail: error?.error?.result?.toString(),
+                    summary: error.message,
                     life: 3000,
                 });
             },
@@ -169,17 +161,14 @@ export class ClientComponent implements OnInit {
             next: (customer) => {
                 this.messageService.add({
                     severity: "success",
-                    summary: "Registro creado con éxito",
-                    detail: customer.result?.toString(),
+                    summary: customer.message,
                     life: 3000,
                 });
             },
-            error: (error) => {
+            error: ({ error }: any) => {
                 this.messageService.add({
                     severity: "error",
-                    summary:
-                        "Hubo un error al registrar al cliente, inténtalo de nuevo.",
-                    detail: error?.error?.result?.toString(),
+                    summary: error.message,
                     life: 3000,
                 });
             },

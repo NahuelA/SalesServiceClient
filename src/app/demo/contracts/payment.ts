@@ -8,7 +8,7 @@ export interface Payment {
     receivedIn?: string;
     employee?: Employee;
     receipt?: string;
-    code?: number;
+    code?: string;
     description?: string;
     date?: Date;
 }

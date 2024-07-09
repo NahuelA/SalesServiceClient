@@ -11,6 +11,7 @@ export interface Sale {
     guarantorName?: string;
     guarantorAddress?: string;
     productDescription?: string;
+    code?: string;
 
     // Mapped instances
     product?: Product;
@@ -23,6 +24,7 @@ export interface Sale {
     date?: Date;
 
     amount?: number;
+    spot?: number;
     fee?: number;
     feesCollected?: number;
     totalFees?: number;

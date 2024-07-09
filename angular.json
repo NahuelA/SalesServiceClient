@@ -3,7 +3,7 @@
     "version": 1,
     "newProjectRoot": "projects",
     "projects": {
-        "casajulianapp": {
+        "sales-service-app": {
             "projectType": "application",
             "schematics": {
                 "@schematics/angular:component": {
@@ -17,7 +17,7 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
-                        "outputPath": "dist/casajulianapp",
+                        "outputPath": "dist/sales-service-app",
                         "index": "src/index.html",
                         "main": "src/main.ts",
                         "polyfills": ["zone.js"],
@@ -58,10 +58,10 @@
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "configurations": {
                         "production": {
-                            "buildTarget": "casajulianapp:build:production"
+                            "buildTarget": "sales-service-app:build:production"
                         },
                         "development": {
-                            "buildTarget": "casajulianapp:build:development"
+                            "buildTarget": "sales-service-app:build:development"
                         }
                     },
                     "defaultConfiguration": "development"
@@ -69,7 +69,7 @@
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "buildTarget": "casajulianapp:build"
+                        "buildTarget": "sales-service-app:build"
                     }
                 },
                 "test": {

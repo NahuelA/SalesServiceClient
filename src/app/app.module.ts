@@ -3,7 +3,6 @@ import { HashLocationStrategy, LocationStrategy } from "@angular/common";
 import { AppComponent } from "./app.component";
 import { AppRoutingModule } from "./app-routing.module";
 import { AppLayoutModule } from "./layout/app.layout.module";
-import { NotfoundComponent } from "./demo/components/notfound/notfound.component";
 import { ProductService } from "./demo/service/product.service";
 import { CustomerService } from "./demo/service/customer.service";
 import { HttpClient, HttpClientModule } from "@angular/common/http";
@@ -29,7 +28,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
 }
 
 @NgModule({
-    declarations: [AppComponent, NotfoundComponent],
+    declarations: [AppComponent],
     imports: [
         BrowserModule,
         BrowserAnimationsModule,

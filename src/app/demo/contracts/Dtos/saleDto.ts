@@ -6,11 +6,13 @@ export interface SaleDto {
     guarantorAddress?: string;
     guarantorName?: string;
     productDescription?: string;
+    code?: string;
     amount?: number;
 
     paymentDate?: Date | string;
     date?: Date | string;
 
+    spot?: number;
     fee?: number;
     installment?: number;
     feesCollected?: number;

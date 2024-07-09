@@ -4,7 +4,6 @@ import {
     ViewChild,
     ElementRef,
     OnDestroy,
-    Input,
 } from "@angular/core";
 import { Table } from "primeng/table";
 import { MessageService, ConfirmationService } from "primeng/api";
@@ -15,12 +14,12 @@ import { Customer } from "../../contracts/customer";
 import { Product } from "../../contracts/product";
 import { ActivatedRoute, Params } from "@angular/router";
 import { Subscription, debounceTime } from "rxjs";
-import { CustomResponse } from "../../contracts/response";
 import { CustomerService } from "../../service/customer.service";
 import { LayoutService } from "src/app/layout/service/app.layout.service";
 import { ProfitService } from "../../service/profit.service";
 import { EmployeeService } from "../../service/employee.service";
 import { Employee } from "../../contracts/employee";
+import { ProductService } from "../../service/product.service";
 
 @Component({
     templateUrl: "./sale.component.html",
@@ -38,6 +37,7 @@ export class SaleComponent implements OnInit, OnDestroy {
     newPaymentDate: PaymentDate = {};
     nextPaymentDate: PaymentDate = {};
     existCustomerMsg: string = "";
+    existProductMsg: string = "";
 
     customer: Customer = {};
     employee: Employee = {};
@@ -46,6 +46,7 @@ export class SaleComponent implements OnInit, OnDestroy {
 
     submitted: boolean = false;
     existCustomerBool: boolean = true;
+    existProduct: boolean = true;
     dialog: boolean = false;
     dialogForChangePaymentDate: boolean = false;
     dialogForPaymentDate: boolean = false;
@@ -93,6 +94,7 @@ export class SaleComponent implements OnInit, OnDestroy {
         private confirmationService: ConfirmationService,
         private _customerService: CustomerService,
         private _employeeService: EmployeeService,
+        private _productService: ProductService,
         private _route: ActivatedRoute,
         private profitService: ProfitService,
         public layoutService: LayoutService
@@ -108,60 +110,56 @@ export class SaleComponent implements OnInit, OnDestroy {
         this._routeSubscription = this._route.params.subscribe(
             (params: Params) => {
                 this.dni = Number.parseInt(params["dni"]);
-
-                console.log(this.dni);
-
                 this.loadSalesAndProfit();
             }
         );
 
         this._salesService.refresh$.subscribe(() => {
-            this._salesService
-                .getBySeller(1000, this.dni)
-                .subscribe((data: CustomResponse) => {
-                    this.sales = data.result as Sale[];
-                    this.title =
-                        this.employee?.name ||
-                        `${this.employee?.name} no tiene ventas`;
-                    this.loading = false;
-                });
+            this._salesService.getBySeller(1000, this.dni).subscribe((sale) => {
+                this.sales = sale.data;
+                console.log(this.sales);
+                this.title =
+                    this.employee?.name ||
+                    `${this.employee?.name} no tiene ventas`;
+                this.loading = false;
+            });
         });
     }
 
     loadSalesAndProfit() {
         this._employeeService.getEmployeeByDni(this.dni).subscribe({
             next: (employee) => {
-                this.employee = employee.result as Employee;
+                this.employee = employee.data;
             },
         });
 
         if (!isNaN(this.dni)) {
-            this._salesService
-                .getBySeller(1000, this.dni)
-                .subscribe((data: CustomResponse) => {
-                    this.sales = data.result as Sale[];
-                    this.title =
-                        this.sales.at(0)?.employee?.name || this.employee?.name;
-                    this.loading = false;
-                });
+            this._salesService.getBySeller(1000, this.dni).subscribe((sale) => {
+                this.sales = sale.data;
+                console.log(this.sales);
+
+                this.title =
+                    this.sales?.at(0)?.employee?.name || this.employee?.name;
+                this.loading = false;
+            });
 
             this.profitService
                 .getEmployeeOverview(this.dni, 2024)
                 .subscribe((data: any) => {
                     this.employeeCollectionR = data.result.profit;
                     this.chartTitle = `Cobranza mensual de ${
-                        this.sales.at(0)?.employee?.name || this.employee?.name
+                        this.sales?.at(0)?.employee?.name || this.employee?.name
                     }`;
 
                     this.labelChart = `Dinero cobrado por ${
-                        this.sales.at(0)?.employee?.name || this.employee?.name
+                        this.sales?.at(0)?.employee?.name || this.employee?.name
                     }`;
 
                     this.initChart();
                 });
         } else {
-            this._salesService.get(1000).subscribe((data: CustomResponse) => {
-                this.sales = data.result as Sale[];
+            this._salesService.get(1000).subscribe((sale) => {
+                this.sales = sale.data;
                 this.loading = false;
             });
 
@@ -250,18 +248,15 @@ export class SaleComponent implements OnInit, OnDestroy {
                         next: (changePaymentDate) => {
                             this.messageService.add({
                                 severity: "success",
-                                summary: "Confirmado",
-                                detail: `La nueva fecha de cobro es: ${this.newPaymentDate?.date?.toLocaleString(
-                                    "es-ES"
-                                )}`,
+                                summary: changePaymentDate.message,
                                 life: 3000,
                             });
+                            this.loadSalesAndProfit();
                         },
-                        error: (error) => {
+                        error: ({ error }: any) => {
                             this.messageService.add({
                                 severity: "error",
-                                summary: "Hubo un error",
-                                detail: `${error?.error?.result}`,
+                                summary: error.message,
                                 life: 3000,
                             });
                         },
@@ -293,21 +288,19 @@ export class SaleComponent implements OnInit, OnDestroy {
                         this.nextPaymentDate.date
                     )
                     .subscribe({
-                        next: () => {
+                        next: (markAsPaid) => {
                             this.messageService.add({
                                 severity: "success",
-                                summary: "Confirmado",
-                                detail: `Has aceptado el pago de cuota del cliente ${this.customer.name}`,
+                                summary: markAsPaid.message,
                                 life: 3000,
                             });
 
                             this.loadSalesAndProfit();
                         },
-                        error: (error) => {
+                        error: ({ error }: any) => {
                             this.messageService.add({
                                 severity: "error",
-                                summary: "Hubo un error",
-                                detail: `${error?.error?.result}`,
+                                summary: error.message,
                                 life: 3000,
                             });
                         },
@@ -322,6 +315,23 @@ export class SaleComponent implements OnInit, OnDestroy {
                     detail: "Pago denegado correctamente!",
                     life: 3000,
                 });
+            },
+        });
+    }
+
+    getProductByCode() {
+        this._productService.getByCode(this.saleDto.code).subscribe({
+            next: (product) => {
+                this.product = product.data;
+                this.existProduct = true;
+                this.existProductMsg = "";
+
+                console.log(product);
+            },
+            error: ({ error }) => {
+                this.product = {};
+                this.existProduct = false;
+                this.existProductMsg = error.message;
             },
         });
     }
@@ -359,6 +369,7 @@ export class SaleComponent implements OnInit, OnDestroy {
         this.dialog = true;
         this.isOpenForEdit = true;
         this.sale = sale;
+
         this.saleDto = {
             saleId: sale.saleId,
             employeeDni: sale.employee?.dni,
@@ -367,9 +378,11 @@ export class SaleComponent implements OnInit, OnDestroy {
             guarantorName: sale.guarantorName,
             guarantorAddress: sale.guarantorAddress,
             productDescription: sale.productDescription,
+            code: sale.code,
             amount: sale.amount,
             paymentDate: sale.paymentDate,
             date: sale.date,
+            spot: sale.spot,
             fee: sale.fee,
             feesCollected: sale.feesCollected,
             totalFees: sale.totalFees,
@@ -394,11 +407,9 @@ export class SaleComponent implements OnInit, OnDestroy {
             next: (data) => {
                 this.existCustomerBool = true;
             },
-            error: (error) => {
-                if (error?.error?.statusCode === 404) {
-                    this.existCustomerBool = false;
-                    this.existCustomerMsg = error.error.result;
-                }
+            error: ({ error }: any) => {
+                this.existCustomerBool = false;
+                this.existCustomerMsg = error.message;
             },
         });
     }
@@ -411,27 +422,28 @@ export class SaleComponent implements OnInit, OnDestroy {
             next: (customer) => {
                 this.messageService.add({
                     severity: "success",
-                    summary: "Registro creado con éxito",
-                    detail: customer?.result?.toString(),
+                    summary: customer.message,
                     life: 3000,
                 });
+                this.existCustomerBool = true;
+                this.existCustomerMsg = customer.message;
             },
-            error: (error) => {
+            error: ({ error }: any) => {
                 this.messageService.add({
                     severity: "error",
-                    summary:
-                        "Hubo un error al registrar al cliente, inténtalo de nuevo.",
-                    detail: error?.error?.result.toString(),
+                    summary: error.message,
                     life: 3000,
                 });
+                this.existCustomerBool = false;
+                this.existCustomerMsg = error.message;
             },
         });
     }
 
-    // openForSeeProduct(product: Product) {
-    //     this.product = product;
-    //     this.dialogForSeeProduct = true;
-    // }
+    openForSeeProduct(product: Product) {
+        this.product = product;
+        this.dialogForSeeProduct = true;
+    }
 
     openForSeeGuarantor(
         guarantorName: string,
@@ -505,19 +517,16 @@ export class SaleComponent implements OnInit, OnDestroy {
             next: (sale) => {
                 this.messageService.add({
                     severity: "success",
-                    summary: "Registro eliminado con éxito",
-                    detail: sale.result?.toString(),
+                    summary: sale.message,
                     life: 3000,
                 });
 
                 this.loadSalesAndProfit();
             },
-            error: (error) => {
+            error: ({ error }: any) => {
                 this.messageService.add({
                     severity: "error",
-                    summary:
-                        "Hubo un error al eliminar la venta, inténtalo de nuevo.",
-                    detail: error?.error?.result?.toString(),
+                    summary: error.message,
                     life: 3000,
                 });
             },
@@ -534,41 +543,37 @@ export class SaleComponent implements OnInit, OnDestroy {
             this._salesService
                 .update(this.saleDto, this.sale.saleId)
                 .subscribe({
-                    next: (data: CustomResponse) => {
+                    next: (sale) => {
                         this.messageService.add({
                             severity: "success",
-                            summary: "Registro actualizado con éxito",
-                            detail: data.result.toString(),
+                            summary: sale.message,
                             life: 3000,
                         });
-
                         this.loadSalesAndProfit();
+                        this.isOpenForEdit = false;
                     },
-                    error: (error) => {
+                    error: ({ error }: any) => {
                         this.messageService.add({
                             severity: "error",
-                            summary: "Hubo un error",
-                            detail: `${error?.error?.result}`,
+                            summary: error.message,
                             life: 3000,
                         });
                     },
                 });
         } else {
             this._salesService.add(this.saleDto).subscribe({
-                next: (data: CustomResponse) => {
+                next: (sale) => {
                     this.messageService.add({
                         severity: "success",
-                        summary: "Registro creado con éxito",
-                        detail: data.result.toString(),
+                        summary: sale.message,
                         life: 3000,
                     });
                     this.loadSalesAndProfit();
                 },
-                error: (error) => {
+                error: ({ error }: any) => {
                     this.messageService.add({
                         severity: "error",
-                        summary: "Hubo un error",
-                        detail: `${error?.error?.result}`,
+                        summary: error.message,
                         life: 3000,
                     });
                 },

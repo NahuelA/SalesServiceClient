@@ -228,7 +228,7 @@
                                 pRipple
                                 type="button"
                                 icon="pi pi-pencil"
-                                (click)="openEditSaleDialog(sale)"
+                                (click)="openUpdateDialog(product)"
                                 class="p-button-rounded p-button-primary p-button-outlined"
                             ></button>
                             <button
@@ -238,6 +238,7 @@
                                 pRipple
                                 type="button"
                                 icon="pi pi-trash"
+                                (click)="openDeleteDialog(product)"
                                 class="p-button-rounded p-button-danger p-button-outlined"
                             ></button>
                         </td>
@@ -482,6 +483,243 @@
                         icon="pi pi-check"
                         class="p-button-text"
                         (click)="saveProduct()"
+                    ></button>
+                </ng-template>
+            </p-dialog>
+
+            <!-- Update product -->
+            <p-dialog
+                [(visible)]="updateDialog"
+                [style]="{ width: '450px' }"
+                header="Actualizar producto"
+                [modal]="true"
+                class="p-fluid"
+            >
+                <ng-template pTemplate="content">
+                    <!-- Name -->
+                    <div class="field">
+                        <label for="name">Nombre</label>
+                        <input
+                            type="text"
+                            pInputText
+                            id="name"
+                            [(ngModel)]="product.productName"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !product.productName
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !product.productName"
+                            >El nombre es requerido.</small
+                        >
+                    </div>
+                    <!-- Code -->
+                    <div class="field">
+                        <label for="code">Código</label>
+                        <input
+                            type="text"
+                            pInputText
+                            id="code"
+                            [(ngModel)]="product.barcode"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !product.barcode
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !product.barcode"
+                            >El código es requerido.</small
+                        >
+                    </div>
+                    <!-- Category -->
+                    <div class="field">
+                        <label for="category">Categoría</label>
+                        <p-dropdown
+                            [(ngModel)]="product.category"
+                            inputId="category"
+                            optionValue="value"
+                            [options]="categories"
+                            placeholder="Seleccione la categoría"
+                        >
+                            <ng-template pTemplate="selectedItem">
+                                <span
+                                    *ngIf="product && product.category"
+                                    [class]="
+                                        'product-badge status-' +
+                                        product.category
+                                            .toString()
+                                            .toLowerCase()
+                                    "
+                                    >{{ product.category }}</span
+                                >
+                            </ng-template>
+                            <ng-template let-option pTemplate="item">
+                                <span
+                                    [class]="
+                                        'product-badge status-' + option.value
+                                    "
+                                    >{{ option.label }}</span
+                                >
+                            </ng-template>
+                        </p-dropdown>
+                    </div>
+                    <!-- spotPrice -->
+                    <div class="field">
+                        <label for="spotPrice">Precio al contado</label>
+                        <input
+                            type="number"
+                            pInputText
+                            id="spotPrice"
+                            [(ngModel)]="product.spotPrice"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !product.spotPrice
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !product.spotPrice"
+                            >El precio es requerido.</small
+                        >
+                    </div>
+                    <!-- installmentPrice -->
+                    <div class="field">
+                        <label for="installmentPrice">Precio por cuota</label>
+                        <input
+                            type="number"
+                            pInputText
+                            id="installmentPrice"
+                            [(ngModel)]="product.installmentPrice"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !product.installmentPrice
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !product.installmentPrice"
+                            >El precio de la cuota es requerido.</small
+                        >
+                    </div>
+                    <!-- Total fees -->
+                    <div class="field">
+                        <label for="totalFees"
+                            >Cantidad de cuotas a pagar</label
+                        >
+                        <input
+                            type="number"
+                            pInputText
+                            id="totalFees"
+                            [(ngModel)]="product.totalFees"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !product?.totalFees
+                            }"
+                        />
+                    </div>
+                    <!-- description -->
+                    <div class="field">
+                        <label for="description">Descripción</label>
+                        <textarea
+                            id="description"
+                            pInputTextarea
+                            [(ngModel)]="product.description"
+                            required
+                            rows="3"
+                            maxlength="500"
+                            cols="20"
+                        ></textarea>
+                    </div>
+                    <!-- quantity -->
+                    <div class="field">
+                        <label for="stock">Cantidad</label>
+                        <input
+                            type="number"
+                            pInputText
+                            id="stock"
+                            [(ngModel)]="product.stock"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !product.stock
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !product.stock"
+                            >La cantidad es requerida.</small
+                        >
+                    </div>
+                </ng-template>
+
+                <ng-template pTemplate="footer">
+                    <button
+                        pButton
+                        pRipple
+                        label="Cancelar"
+                        icon="pi pi-times"
+                        class="p-button-text"
+                        (click)="hideUpdateDialog()"
+                    ></button>
+                    <button
+                        pButton
+                        pRipple
+                        label="Guardar"
+                        icon="pi pi-check"
+                        class="p-button-text"
+                        (click)="update()"
+                    ></button>
+                </ng-template>
+            </p-dialog>
+
+            <!-- Delete product dialog -->
+            <p-dialog
+                [(visible)]="deleteDialog"
+                header="Confirmar"
+                [modal]="true"
+                [style]="{ width: '450px' }"
+            >
+                <div class="flex align-items-center justify-content-center">
+                    <i
+                        class="pi pi-exclamation-triangle mr-3"
+                        style="font-size: 2rem"
+                    ></i>
+                    <span *ngIf="product"
+                        >Estás seguro que quieres eliminar este registro :
+                        <b>{{ product.productName }}</b
+                        >?</span
+                    >
+                </div>
+                <ng-template pTemplate="footer">
+                    <button
+                        pButton
+                        pRipple
+                        icon="pi pi-times"
+                        class="p-button-text"
+                        label="Cancelar"
+                        (click)="hideDeleteDialog()"
+                    ></button>
+                    <button
+                        pButton
+                        pRipple
+                        icon="pi pi-check"
+                        class="p-button-text"
+                        label="Confirmar"
+                        (click)="remove()"
                     ></button>
                 </ng-template>
             </p-dialog>
