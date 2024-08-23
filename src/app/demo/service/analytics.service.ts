@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { BaseResponse } from "../contracts/Base/baseResponse";
 import { Observable, Subject, tap } from "rxjs";
-import { localApi } from "src/app/layout/urlservice";
+import { apiUrl } from "src/app/layout/urlservice";
 import { SaleOverviewDto } from "../contracts/Dtos/saleOverviewDto";
 import { CustomerOverviewDto } from "../contracts/Dtos/customerOverviewDto";
 
@@ -18,7 +18,7 @@ export class AnalyticsService {
 
     get(year: number): Observable<BaseResponse<any>> {
         const res = this.http
-            .get<BaseResponse<any>>(`${localApi}dashboard/?year=${year}`)
+            .get<BaseResponse<any>>(`${apiUrl}dashboard/?year=${year}`)
             .pipe(
                 tap(() => {
                     this._refresh$.next();
@@ -34,7 +34,7 @@ export class AnalyticsService {
     ): Observable<BaseResponse<any>> {
         const res = this.http
             .get<BaseResponse<any>>(
-                `${localApi}dashboard/employee/${dni}/${year}`
+                `${apiUrl}dashboard/employee/${dni}/${year}`
             )
             .pipe(
                 tap(() => {
@@ -47,7 +47,7 @@ export class AnalyticsService {
 
     saleOverview(month: number, year: number): Observable<SaleOverviewDto> {
         const res = this.http.get<SaleOverviewDto>(
-            `${localApi}dashboard/saleOverview/`,
+            `${apiUrl}dashboard/saleOverview/`,
             {
                 params: {
                     month: month,
@@ -64,7 +64,7 @@ export class AnalyticsService {
         year: number
     ): Observable<CustomerOverviewDto> {
         const res = this.http.get<CustomerOverviewDto>(
-            `${localApi}dashboard/customerOverview/`,
+            `${apiUrl}dashboard/customerOverview/`,
             {
                 params: {
                     month: month,
@@ -81,7 +81,7 @@ export class AnalyticsService {
         year: number
     ): Observable<CustomerOverviewDto> {
         const res = this.http.get<CustomerOverviewDto>(
-            `${localApi}dashboard/grossRevenueOverview/`,
+            `${apiUrl}dashboard/grossRevenueOverview/`,
             {
                 params: {
                     month: month,
