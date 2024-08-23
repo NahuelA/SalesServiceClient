@@ -1,0 +1,455 @@
+<div class="grid">
+    <div class="col-12">
+        <div class="card">
+            <p-toast></p-toast>
+            <div [style]="{ display: 'flex', alignItems: 'center' }">
+                <h5 [style]="{ margin: 'auto 0' }">{{ title }}</h5>
+
+                <div class="my-2" [style]="{ marginLeft: '10px' }">
+                    <button
+                        pButton
+                        pRipple
+                        label="Añadir"
+                        icon="pi pi-user-plus"
+                        class="p-button-success mr-2"
+                        (click)="openNew()"
+                    ></button>
+                    <!-- <button
+                        pButton
+                        pRipple
+                        label="Delete"
+                        icon="pi pi-trash"
+                        class="p-button-danger"
+                        (click)="deleteSelectedProducts()"
+                        [disabled]="
+                            !selectedProducts || !selectedProducts.length
+                        "
+                    ></button> -->
+                </div>
+            </div>
+            <p-table
+                #dt1
+                [value]="receipts"
+                dataKey="receiptId"
+                [rows]="10"
+                [loading]="loading"
+                [rowHover]="true"
+                styleClass="p-datatable-gridlines"
+                [paginator]="true"
+                [globalFilterFields]="[
+                    'receiptId',
+                    'code',
+                    'customer.name',
+                    'customer.dni',
+                    'date'
+                ]"
+                responsiveLayout="scroll"
+            >
+                <ng-template pTemplate="caption">
+                    <div
+                        class="flex justify-content-between flex-column sm:flex-row"
+                    >
+                        <button
+                            pButton
+                            label="Limpiar filtros"
+                            class="p-button-outlined mb-2"
+                            icon="pi pi-filter-slash"
+                            (click)="clear(dt1)"
+                        ></button>
+                        <span class="p-input-icon-left mb-2">
+                            <i class="pi pi-search"></i>
+                            <input
+                                pInputText
+                                type="text"
+                                #filter
+                                (input)="onGlobalFilter(dt1, $event)"
+                                placeholder="{{ searchPlaceholder }}"
+                                class="w-full"
+                            />
+                        </span>
+                    </div>
+                </ng-template>
+
+                <!-- Headers -->
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="min-width: 12rem">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                Opt
+                            </div>
+                        </th>
+                        <th style="min-width: 8rem">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                Cantidad
+                            </div>
+                        </th>
+                        <th style="min-width: 8rem">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                Método de pago
+                            </div>
+                        </th>
+                        <th style="min-width: 8rem">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                Cliente
+                                <p-columnFilter
+                                    type="text"
+                                    field="employee.name"
+                                    display="menu"
+                                    placeholder="Buscar por cliente"
+                                ></p-columnFilter>
+                            </div>
+                        </th>
+                        <th style="min-width: 12rem">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                Código
+                                <p-columnFilter
+                                    type="text"
+                                    field="code"
+                                    display="menu"
+                                    placeholder="Buscar por código"
+                                ></p-columnFilter>
+                            </div>
+                        </th>
+                        <th style="min-width: 12rem">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                Comprobante
+                            </div>
+                        </th>
+                        <th style="min-width: 10rem">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                Detalle
+                            </div>
+                        </th>
+                        <th style="min-width: 8rem">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                Fecha
+                                <p-columnFilter
+                                    field="date"
+                                    placeholder="Fecha"
+                                    display="menu"
+                                    type="date"
+                                >
+                                </p-columnFilter>
+                            </div>
+                        </th>
+                    </tr>
+                </ng-template>
+
+                <!-- Body with all receipts -->
+                <ng-template pTemplate="body" let-receipt>
+                    <tr>
+                        <td
+                            style="
+                                display: flex;
+                                justify-content: center;
+                                flex-direction: row;
+                            "
+                        >
+                            <button
+                                title="Eliminar registro"
+                                style="margin-left: 5px"
+                                pButton
+                                pRipple
+                                type="button"
+                                icon="pi pi-trash"
+                                (click)="displayDeleteDialog(receipt)"
+                                class="p-button-rounded p-button-danger p-button-outlined"
+                            ></button>
+                        </td>
+                        <td>
+                            {{ receipt?.amount }}
+                        </td>
+                        <td>
+                            {{ receipt?.paymentMethod }}
+                        </td>
+                        <td>
+                            {{ receipt?.customer?.name }}
+                        </td>
+                        <td>
+                            {{ receipt?.code }}
+                        </td>
+                        <!-- See receipt -->
+                        <td
+                            style="
+                                display: flex;
+                                justify-content: center;
+                                flex-direction: row;
+                            "
+                        >
+                            <a
+                                pButton
+                                pRipple
+                                href="{{ url }}{{ receipt?.url }}"
+                                type="button"
+                                icon="pi pi-arrow-up-right"
+                                class="p-button-rounded p-button-success"
+                                title="Ver comprobante"
+                            ></a>
+                        </td>
+                        <td>
+                            {{ receipt?.detail }}
+                        </td>
+                        <td>
+                            {{ receipt?.date | date : ["d/M/yy"] }}
+                        </td>
+                    </tr>
+                </ng-template>
+
+                <!-- Empty message -->
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="8">No se han registrado comprobantes.</td>
+                    </tr>
+                </ng-template>
+                <!-- Loading body -->
+                <ng-template pTemplate="loadingbody">
+                    <tr>
+                        <td colspan="8">
+                            Cargando registros. Por favor espere.
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+
+            <!-- Add new receipt -->
+            <p-dialog
+                [(visible)]="dialog"
+                [style]="{ width: '450px' }"
+                header="Añadir pago"
+                [modal]="true"
+                class="p-fluid"
+            >
+                <ng-template pTemplate="content">
+                    <!-- Customer Dni -->
+                    <div class="field">
+                        <p-dropdown
+                            [options]="customers"
+                            [(ngModel)]="selectedCustomer"
+                            optionLabel="name"
+                            [filter]="true"
+                            filterBy="name"
+                            [showClear]="true"
+                            placeholder="Seleccione al cliente"
+                            styleClass="w-full"
+                        >
+                            <ng-template
+                                pTemplate="filter"
+                                let-options="options"
+                            >
+                                <div class="flex gap-1">
+                                    <div
+                                        class="p-inputgroup"
+                                        (click)="$event.stopPropagation()"
+                                    >
+                                        <span class="p-inputgroup-addon"
+                                            ><i class="pi pi-search"></i
+                                        ></span>
+                                        <input
+                                            type="text"
+                                            pInputText
+                                            placeholder="Filter"
+                                            [(ngModel)]="filterValue"
+                                            (keyup)="
+                                                customFilterFunction(
+                                                    $event,
+                                                    options
+                                                )
+                                            "
+                                        />
+                                    </div>
+                                    <button
+                                        pButton
+                                        icon="pi pi-times"
+                                        (click)="resetFunction(options)"
+                                        severity="secondary"
+                                    ></button>
+                                </div>
+                            </ng-template>
+                            <ng-template
+                                pTemplate="selectedItem"
+                                let-selectedOption
+                            >
+                                <div class="flex align-items-center gap-2">
+                                    <div>{{ selectedOption?.dni }}</div>
+                                </div>
+                            </ng-template>
+                            <ng-template let-customer pTemplate="item">
+                                <div class="flex align-items-center gap-2">
+                                    <i class="pi pi-user"></i>
+                                    <div>{{ customer?.name }}</div>
+                                </div>
+                            </ng-template>
+                        </p-dropdown>
+                    </div>
+
+                    <!-- Detail -->
+                    <div class="field">
+                        <label for="description">Detalle</label>
+                        <textarea
+                            id="description"
+                            pInputTextarea
+                            [(ngModel)]="receiptDto.detail"
+                            required
+                            rows="3"
+                            maxlength="500"
+                            cols="20"
+                        ></textarea>
+                    </div>
+
+                    <!-- Payment method -->
+                    <div class="field">
+                        <label for="paymentMethod">Método de pago</label>
+                        <p-dropdown
+                            [(ngModel)]="receiptDto.paymentMethod"
+                            inputId="paymentMethod"
+                            optionValue="value"
+                            [options]="paymentMethod"
+                            placeholder="Seleccione el método de pago"
+                        >
+                            <ng-template pTemplate="selectedItem">
+                                <span
+                                    *ngIf="
+                                        receiptDto && receiptDto.paymentMethod
+                                    "
+                                    [class]="
+                                        'product-badge status-' +
+                                        receiptDto.paymentMethod
+                                            .toString()
+                                            .toLowerCase()
+                                    "
+                                    >{{ receiptDto.paymentMethod }}</span
+                                >
+                            </ng-template>
+                            <ng-template let-option pTemplate="item">
+                                <span
+                                    [class]="
+                                        'product-badge status-' + option.value
+                                    "
+                                    >{{ option.label }}</span
+                                >
+                            </ng-template>
+                        </p-dropdown>
+                    </div>
+
+                    <!-- amount -->
+                    <div class="field">
+                        <label for="amount">Cantidad</label>
+                        <input
+                            type="number"
+                            pInputText
+                            id="amount"
+                            placeholder="$"
+                            [(ngModel)]="receiptDto.amount"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !receiptDto.amount
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !receiptDto.amount"
+                            >El monto es requerido.</small
+                        >
+                    </div>
+
+                    <!-- Date -->
+                    <div class="field">
+                        <label for="date">Fecha</label>
+                        <input
+                            type="date"
+                            pInputDate
+                            id="date"
+                            [(ngModel)]="receiptDto.date"
+                            required
+                            autofocus
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    submitted && !receiptDto.date
+                            }"
+                        />
+                        <small
+                            class="ng-dirty ng-invalid"
+                            *ngIf="submitted && !receiptDto.date"
+                            >La fecha es requerida.</small
+                        >
+                    </div>
+                </ng-template>
+
+                <ng-template pTemplate="footer">
+                    <button
+                        pButton
+                        pRipple
+                        label="Cancelar"
+                        icon="pi pi-times"
+                        class="p-button-text"
+                        (click)="hideDialog()"
+                    ></button>
+                    <button
+                        pButton
+                        pRipple
+                        label="Guardar"
+                        icon="pi pi-check"
+                        class="p-button-text"
+                        (click)="saveProduct()"
+                    ></button>
+                </ng-template>
+            </p-dialog>
+
+            <!-- Delete dialog -->
+            <p-dialog
+                [(visible)]="deleteDialog"
+                header="Confirmar"
+                [modal]="true"
+                [style]="{ width: '450px' }"
+            >
+                <div class="flex align-items-center justify-content-center">
+                    <i
+                        class="pi pi-exclamation-triangle mr-3"
+                        style="font-size: 2rem"
+                    ></i>
+                    <span *ngIf="receipt"
+                        >Estás seguro que quieres eliminar este comprobante con
+                        código : <b>{{ receipt?.code }}</b
+                        >?</span
+                    >
+                </div>
+                <ng-template pTemplate="footer">
+                    <button
+                        pButton
+                        pRipple
+                        icon="pi pi-times"
+                        class="p-button-text"
+                        label="Cancelar"
+                        (click)="hideDeleteDialog()"
+                    ></button>
+                    <button
+                        pButton
+                        pRipple
+                        icon="pi pi-check"
+                        class="p-button-text"
+                        label="Confirmar"
+                        (click)="remove()"
+                    ></button>
+                </ng-template>
+            </p-dialog>
+        </div>
+    </div>
+</div>

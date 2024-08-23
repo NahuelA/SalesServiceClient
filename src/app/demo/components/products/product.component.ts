@@ -20,8 +20,6 @@ export class ProductComponent implements OnInit {
     submitted: boolean = false;
     dialog: boolean = false;
 
-    selectedEmployee: Product = {};
-
     idFrozen: boolean = false;
 
     loading: boolean = true;
@@ -126,11 +124,20 @@ export class ProductComponent implements OnInit {
                 });
             },
             error: ({ error }: any) => {
-                this.messageService.add({
-                    severity: "error",
-                    summary: error.message,
-                    life: 3000,
-                });
+                if (error.errors !== null)
+                    error?.errors?.map((x) => {
+                        this.messageService.add({
+                            severity: "error",
+                            summary: x.errorMessage,
+                            life: 4000,
+                        });
+                    });
+                else
+                    this.messageService.add({
+                        severity: "error",
+                        summary: error.message,
+                        life: 3000,
+                    });
             },
         });
     }
@@ -138,7 +145,7 @@ export class ProductComponent implements OnInit {
     remove() {
         this.deleteDialog = false;
 
-        this._productService.delete(this.product.barcode).subscribe({
+        this._productService.delete(this.product.code).subscribe({
             next: (product) => {
                 this.messageService.add({
                     severity: "success",
@@ -163,23 +170,30 @@ export class ProductComponent implements OnInit {
     update() {
         this.updateDialog = false;
 
-        this._productService
-            .update(this.product.barcode, this.product)
-            .subscribe({
-                next: (product) => {
-                    this.messageService.add({
-                        severity: "success",
-                        summary: product.message,
-                        life: 3000,
+        this._productService.update(this.product.code, this.product).subscribe({
+            next: (product) => {
+                this.messageService.add({
+                    severity: "success",
+                    summary: product.message,
+                    life: 3000,
+                });
+            },
+            error: ({ error }: any) => {
+                if (error.errors !== null)
+                    error?.errors?.map((x) => {
+                        this.messageService.add({
+                            severity: "error",
+                            summary: x.errorMessage,
+                            life: 4000,
+                        });
                     });
-                },
-                error: ({ error }: any) => {
+                else
                     this.messageService.add({
                         severity: "error",
                         summary: error.message,
                         life: 3000,
                     });
-                },
-            });
+            },
+        });
     }
 }

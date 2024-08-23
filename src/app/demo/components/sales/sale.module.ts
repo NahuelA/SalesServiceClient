@@ -6,7 +6,6 @@ import { SaleRoutingModule } from "./sale-routing.module";
 import { TableModule } from "primeng/table";
 import { ButtonModule } from "primeng/button";
 import { InputTextModule } from "primeng/inputtext";
-import { ToggleButtonModule } from "primeng/togglebutton";
 import { DropdownModule } from "primeng/dropdown";
 import { ToastModule } from "primeng/toast";
 import { InputTextareaModule } from "primeng/inputtextarea";
@@ -16,6 +15,7 @@ import { CalendarModule } from "primeng/calendar";
 import { ConfirmPopupModule } from "primeng/confirmpopup";
 import { ConfirmDialogModule } from "primeng/confirmdialog";
 import { ChartModule } from "primeng/chart";
+import { AnalyticsService } from "../../service/analytics.service";
 
 @NgModule({
     imports: [
@@ -28,7 +28,6 @@ import { ChartModule } from "primeng/chart";
         TableModule,
         ButtonModule,
         InputTextModule,
-        ToggleButtonModule,
         DropdownModule,
         ToastModule,
         InputTextareaModule,
@@ -36,6 +35,7 @@ import { ChartModule } from "primeng/chart";
         DialogModule,
         ChartModule,
     ],
+    providers: [AnalyticsService],
     declarations: [SaleComponent],
 })
 export class SaleModule {}

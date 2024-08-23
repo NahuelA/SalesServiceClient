@@ -1,6 +1,7 @@
 import { RouterModule } from "@angular/router";
 import { NgModule } from "@angular/core";
 import { AppLayoutComponent } from "./layout/app.layout.component";
+import { authGuardGuard } from "./demo/guards/auth-guard.guard";
 
 @NgModule({
     imports: [
@@ -16,6 +17,7 @@ import { AppLayoutComponent } from "./layout/app.layout.component";
                                 import(
                                     "./demo/components/dashboard/dashboard.module"
                                 ).then((m) => m.DashboardModule),
+                            canActivate: [authGuardGuard],
                         },
                         {
                             path: "empleados",
@@ -23,13 +25,15 @@ import { AppLayoutComponent } from "./layout/app.layout.component";
                                 import(
                                     "./demo/components/employees/employee.module"
                                 ).then((m) => m.EmployeeModule),
+                            canActivate: [authGuardGuard],
                         },
                         {
                             path: "clientes",
                             loadChildren: () =>
                                 import(
-                                    "./demo/components/clients/client.module"
-                                ).then((m) => m.ClientModule),
+                                    "./demo/components/customer/customer.module"
+                                ).then((m) => m.CustomerModule),
+                            canActivate: [authGuardGuard],
                         },
                         {
                             path: "productos",
@@ -37,13 +41,15 @@ import { AppLayoutComponent } from "./layout/app.layout.component";
                                 import(
                                     "./demo/components/products/product.module"
                                 ).then((m) => m.ProductModule),
+                            canActivate: [authGuardGuard],
                         },
                         {
                             path: "comprobantes",
                             loadChildren: () =>
                                 import(
-                                    "./demo/components/payments/payment.module"
-                                ).then((m) => m.PaymentModule),
+                                    "./demo/components/receipt/receipt.module"
+                                ).then((m) => m.ReceiptModule),
+                            canActivate: [authGuardGuard],
                         },
                         {
                             path: "ventas",
@@ -51,17 +57,58 @@ import { AppLayoutComponent } from "./layout/app.layout.component";
                                 import(
                                     "./demo/components/sales/sale.module"
                                 ).then((m) => m.SaleModule),
+                            canActivate: [authGuardGuard],
                         },
+                        {
+                            path: "cuenta/perfil",
+                            loadChildren: () =>
+                                import(
+                                    "./demo/components/profile/profile.module"
+                                ).then((m) => m.ProfileModule),
+                            canActivate: [authGuardGuard],
+                        },
+                        {
+                            path: "administrar-correos",
+                            loadChildren: () =>
+                                import(
+                                    "./demo/components/email/email.module"
+                                ).then((m) => m.EmailModule),
+                            canActivate: [authGuardGuard],
+                        },
+                        {
+                            path: "recordatorios",
+                            loadChildren: () =>
+                                import(
+                                    "./demo/components/reminder/reminder.module"
+                                ).then((m) => m.ReminderModule),
+                            canActivate: [authGuardGuard],
+                        },
+                        // {
+                        //     path: "correos",
+                        //     loadChildren: () =>
+                        //         import(
+                        //             "./demo/components/sales/sale.module"
+                        //         ).then((m) => m.SaleModule),
+                        //     canActivate: [authGuardGuard],
+                        // },
+                        // {
+                        //     path: "recordatorios",
+                        //     loadChildren: () =>
+                        //         import(
+                        //             "./demo/components/sales/sale.module"
+                        //         ).then((m) => m.SaleModule),
+                        //     canActivate: [authGuardGuard],
+                        // },
                     ],
                 },
                 {
-                    path: "auth",
+                    path: "cuenta",
                     loadChildren: () =>
                         import("./demo/components/auth/auth.module").then(
                             (m) => m.AuthModule
                         ),
                 },
-                { path: "**", redirectTo: "/notfound" },
+                { path: "**", redirectTo: "/" },
             ],
             {
                 scrollPositionRestoration: "enabled",

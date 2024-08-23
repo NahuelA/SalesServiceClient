@@ -32,6 +32,26 @@ export class AppMenuComponent implements OnInit {
                         icon: "pi pi-fw pi-home",
                         routerLink: ["/"],
                     },
+                    {
+                        label: "Correos",
+                        icon: "pi pi-fw pi-envelope",
+                        routerLink: ["/administrar-correos"],
+                    },
+                    {
+                        label: "Agenda",
+                        icon: "pi pi-fw pi-calendar-times",
+                        routerLink: ["/recordatorios"],
+                    },
+                ],
+            },
+            {
+                label: "Cuenta",
+                items: [
+                    {
+                        label: "Perfil",
+                        icon: "pi pi-fw pi-user",
+                        routerLink: ["/cuenta/perfil"],
+                    },
                 ],
             },
             /* UI Components section */
@@ -45,7 +65,7 @@ export class AppMenuComponent implements OnInit {
                     },
                     {
                         label: "Clientes",
-                        icon: "pi pi-fw pi-user",
+                        icon: "pi pi-fw pi-user-edit",
                         routerLink: ["/clientes/"],
                     },
                     {
@@ -66,27 +86,5 @@ export class AppMenuComponent implements OnInit {
                 ],
             },
         ];
-
-        this._employeeService.get().subscribe((employee) => {
-            this.employees = employee?.data;
-
-            this.employees.map((emp, i) => {
-                this.employeeMenuTarget.label = emp?.name;
-                this.employeeMenuTarget.icon = "pi pi-fw pi-bookmark";
-                this.employeeMenuTarget.routerLink = [`/ventas/${emp?.dni}`];
-
-                if (this.counter == 0) this.employeeMenu.shift();
-
-                if (this.counter < this.employees.length) {
-                    this.employeeMenu?.push({ ...this.employeeMenuTarget });
-                }
-                this.counter++;
-            });
-        });
-
-        this.model.push({
-            label: "Ventas",
-            items: this.employeeMenu,
-        });
     }
 }

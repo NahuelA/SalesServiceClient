@@ -4,22 +4,29 @@ import { Subscription, debounceTime } from "rxjs";
 import { LayoutService } from "src/app/layout/service/app.layout.service";
 import { SaleService } from "../../service/sale.service";
 import { Sale } from "../../contracts/sale";
-import { BaseResponse } from "../../contracts/response";
-import { ProfitService } from "../../service/profit.service";
+import { AnalyticsService } from "../../service/analytics.service";
+import { SaleOverviewDto } from "../../contracts/Dtos/saleOverviewDto";
+import { CustomerOverviewDto } from "../../contracts/Dtos/customerOverviewDto";
+import { GrossRevenueOverview } from "../../contracts/Dtos/grossRevenueOverviewDto";
 
 @Component({
     templateUrl: "./dashboard.component.html",
+    styleUrl: "../../../../assets/demo/styles/dashboard.scss",
 })
 export class DashboardComponent implements OnInit, OnDestroy {
     items!: MenuItem[];
     limit: number = 50;
 
+    date: string[] = new Date().toLocaleDateString("es-AR").split("/");
     sales!: Sale[];
     sale: Sale = {};
     dialogForSeeSale: boolean = false;
 
+    saleOverview: SaleOverviewDto = {};
+    customerOverview: CustomerOverviewDto = {};
+    grossRevenueOverview: GrossRevenueOverview = {};
     salesData: any;
-    profit: any;
+    spotSalesData: any;
     monthlyCollection: any;
 
     months: any = [
@@ -39,7 +46,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     salesDataR: any = [];
     monthlyCollectionDataR: any = [];
-    profitDataR: any;
+    spotSalesR: any;
 
     chartOptions: any;
 
@@ -47,7 +54,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     constructor(
         private salesService: SaleService,
-        private profitService: ProfitService,
+        private analyticsService: AnalyticsService,
         public layoutService: LayoutService
     ) {
         this.subscription = this.layoutService.configUpdate$
@@ -60,14 +67,34 @@ export class DashboardComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.salesService.get(this.limit).subscribe((data: any) => {
             this.sales = data.result as Sale[];
-            console.log(this.sales);
         });
 
-        this.profitService.get(2024).subscribe((data: any) => {
-            this.profitDataR = data.result?.profit; // Fee * Total fees
-            this.monthlyCollectionDataR = data.result.collect; // Fee * Fees collected
-            this.salesDataR = data.result.sales; // Total sales
+        this.analyticsService.get(2024).subscribe((data: any) => {
+            this.spotSalesR = data.result?.profit; // Spot sales
+            this.monthlyCollectionDataR = data.result?.collect; // Fee * Fees collected
+            this.salesDataR = data.result?.sales; // Total sales
             this.initChart();
+        });
+
+        var month = Number.parseInt(this.date.at(1));
+        var year = Number.parseInt(this.date.at(2));
+
+        this.analyticsService.saleOverview(month, year).subscribe({
+            next: (saleOverview) => {
+                this.saleOverview = saleOverview;
+            },
+        });
+
+        this.analyticsService.customerOverview(month, year).subscribe({
+            next: (customerOverview) => {
+                this.customerOverview = customerOverview;
+            },
+        });
+
+        this.analyticsService.grossRevenueOverview(month, year).subscribe({
+            next: (grossRevenue) => {
+                this.grossRevenueOverview = grossRevenue;
+            },
         });
     }
 
@@ -95,12 +122,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
             ],
         };
 
-        this.profit = {
+        this.spotSalesData = {
             labels: this.months,
             datasets: [
                 {
-                    label: "Ganancia mensual",
-                    data: this.profitDataR,
+                    label: "Dinero de ventas al contado",
+                    data: this.spotSalesR,
                     fill: true,
                     backgroundColor:
                         documentStyle.getPropertyValue("--green-800"),
@@ -114,7 +141,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             labels: this.months,
             datasets: [
                 {
-                    label: "Dinero cobrado",
+                    label: "Dinero a cuotas",
                     data: this.monthlyCollectionDataR,
                     fill: true,
                     backgroundColor:

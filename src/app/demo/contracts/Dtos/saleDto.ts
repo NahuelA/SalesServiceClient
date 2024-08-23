@@ -1,31 +1,29 @@
 export interface SaleDto {
-    saleId?: number;
+    saleId?: string;
     employeeDni?: number;
-    clientDni?: number;
+    customerDni?: number;
     guarantorDni?: number;
     guarantorAddress?: string;
     guarantorName?: string;
-    productDescription?: string;
+    detail?: string;
     code?: string;
     amount?: number;
 
     paymentDate?: Date | string;
     date?: Date | string;
 
-    spot?: number;
-    fee?: number;
-    installment?: number;
+    price?: number;
     feesCollected?: number;
     totalFees?: number;
 }
 
 export interface PaymentDate {
-    saleId?: number;
+    saleId?: string;
     date?: Date | string;
 }
 
 export interface MarkAsPaid {
-    saleId: number;
+    saleId: string;
     isPaid?: boolean;
     fee: number;
 }

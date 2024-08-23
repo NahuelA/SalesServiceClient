@@ -107,6 +107,15 @@
                             </div>
                         </th>
 
+                        <!-- Detail -->
+                        <th style="min-width: 8rem">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                Detalle
+                            </div>
+                        </th>
+
                         <!-- Payment date -->
                         <th style="min-width: 8rem">
                             <div
@@ -122,15 +131,6 @@
                                 class="flex justify-content-between align-items-center"
                             >
                                 Cambio de fecha
-                            </div>
-                        </th>
-
-                        <!-- Product desc -->
-                        <th style="min-width: 8rem">
-                            <div
-                                class="flex justify-content-between align-items-center"
-                            >
-                                Descripción del producto
                             </div>
                         </th>
 
@@ -152,21 +152,12 @@
                             </div>
                         </th>
 
-                        <!-- Spot -->
+                        <!-- Price -->
                         <th style="min-width: 8rem">
                             <div
                                 class="flex justify-content-between align-items-center"
                             >
-                                Contado
-                            </div>
-                        </th>
-
-                        <!-- Fee -->
-                        <th style="min-width: 8rem">
-                            <div
-                                class="flex justify-content-between align-items-center"
-                            >
-                                Cuota
+                                Precio
                             </div>
                         </th>
 
@@ -293,6 +284,7 @@
                                 ></p-confirmPopup>
                             </div>
                         </td>
+                        <!-- Date -->
                         <td>
                             {{ sale?.date | date : ["MMM d, y"] }}
                         </td>
@@ -311,32 +303,41 @@
                                 icon="pi pi-arrow-up-right"
                                 class="p-button-rounded p-button-success"
                                 id="{{ asset?.clientId }}"
-                                (click)="openForSeeClient(sale?.client)"
+                                (click)="openForSeeClient(sale?.customer)"
                                 title="Ver cliente"
                             ></button>
                         </td>
 
+                        <!-- Detail -->
+                        <td>
+                            {{ sale?.detail }}
+                        </td>
+
+                        <!-- Payment date -->
                         <td>
                             {{ sale?.paymentDate | date : ["MMM d, y"] }}
                         </td>
+
+                        <!-- New payment date -->
                         <td>
                             {{ sale?.newPaymentDate | date : ["MMM d, y"] }}
                         </td>
-                        <td>
-                            {{ sale?.productDescription }}
-                        </td>
+
+                        <!-- Code -->
                         <td>
                             {{ sale?.code }}
                         </td>
+
+                        <!-- Amount -->
                         <td>
                             {{ sale?.amount }}
                         </td>
+
+                        <!-- Price -->
                         <td>
-                            {{ sale?.spot }}
+                            {{ sale?.price }}
                         </td>
-                        <td>
-                            {{ sale?.fee }}
-                        </td>
+
                         <!-- See Guarantor -->
                         <td
                             style="
@@ -362,12 +363,17 @@
                                 title="Ver empleado"
                             ></button>
                         </td>
+
+                        <!-- Fee collected -->
                         <td>
                             {{ sale?.feesCollected }}
                         </td>
+
+                        <!-- Total fees -->
                         <td>
                             {{ sale?.totalFees }}
                         </td>
+
                         <!-- See paymentDateChanged -->
                         <td
                             style="
@@ -437,47 +443,127 @@
                     <!-- Employee Dni -->
                     <div class="field">
                         <label for="dni">Dni empleado</label>
-                        <input
-                            type="number"
-                            pInputText
-                            id="dni"
-                            [(ngModel)]="saleDto.employeeDni"
-                            required
-                            autofocus
-                            [ngClass]="{
-                                'ng-invalid ng-dirty':
-                                    submitted && !saleDto.employeeDni
-                            }"
-                        />
-                        <small
-                            class="ng-dirty ng-invalid"
-                            *ngIf="submitted && !saleDto.employeeDni"
-                            >El dni es requerido.</small
+                        <p-dropdown
+                            [options]="employees"
+                            [(ngModel)]="selectedEmployee"
+                            optionLabel="name"
+                            [filter]="true"
+                            filterBy="name"
+                            [showClear]="true"
+                            placeholder="Seleccione al empleado"
+                            styleClass="w-full"
                         >
+                            <ng-template
+                                pTemplate="filter"
+                                let-options="options"
+                            >
+                                <div class="flex gap-1">
+                                    <div
+                                        class="p-inputgroup"
+                                        (click)="$event.stopPropagation()"
+                                    >
+                                        <span class="p-inputgroup-addon"
+                                            ><i class="pi pi-search"></i
+                                        ></span>
+                                        <input
+                                            type="text"
+                                            pInputText
+                                            placeholder="Filter"
+                                            [(ngModel)]="filterValue"
+                                            (keyup)="
+                                                customFilterFunction(
+                                                    $event,
+                                                    options
+                                                )
+                                            "
+                                        />
+                                    </div>
+                                    <button
+                                        pButton
+                                        icon="pi pi-times"
+                                        (click)="resetFunction(options)"
+                                        severity="secondary"
+                                    ></button>
+                                </div>
+                            </ng-template>
+                            <ng-template
+                                pTemplate="selectedItem"
+                                let-selectedOption
+                            >
+                                <div class="flex align-items-center gap-2">
+                                    <div>{{ selectedOption?.dni }}</div>
+                                </div>
+                            </ng-template>
+                            <ng-template let-employee pTemplate="item">
+                                <div class="flex align-items-center gap-2">
+                                    <i class="pi pi-user"></i>
+                                    <div>{{ employee?.name }}</div>
+                                </div>
+                            </ng-template>
+                        </p-dropdown>
                     </div>
 
-                    <!-- Client Dni -->
+                    <!-- Customer Dni -->
                     <div class="field">
                         <label for="cdni">Dni cliente</label>
-                        <input
-                            type="number"
-                            pInputText
-                            id="cdni"
-                            [(ngModel)]="saleDto.clientDni"
-                            (ngModelChange)="existCustomer(saleDto.clientDni)"
-                            required
-                            autofocus
-                            [ngClass]="{
-                                'ng-invalid ng-dirty':
-                                    submitted && !saleDto.clientDni
-                            }"
-                        />
-                        <small
-                            class="ng-dirty ng-invalid"
-                            *ngIf="!existCustomerBool"
-                            style="color: red"
-                            >{{ this.existCustomerMsg }}</small
+                        <p-dropdown
+                            [options]="customers"
+                            [(ngModel)]="selectedCustomer"
+                            optionLabel="name"
+                            [filter]="true"
+                            filterBy="name"
+                            [showClear]="true"
+                            placeholder="Seleccione al cliente"
+                            styleClass="w-full"
                         >
+                            <ng-template
+                                pTemplate="filter"
+                                let-options="options"
+                            >
+                                <div class="flex gap-1">
+                                    <div
+                                        class="p-inputgroup"
+                                        (click)="$event.stopPropagation()"
+                                    >
+                                        <span class="p-inputgroup-addon"
+                                            ><i class="pi pi-search"></i
+                                        ></span>
+                                        <input
+                                            type="text"
+                                            pInputText
+                                            placeholder="Filter"
+                                            [(ngModel)]="filterValue"
+                                            (keyup)="
+                                                customFilterFunction(
+                                                    $event,
+                                                    options
+                                                )
+                                            "
+                                        />
+                                    </div>
+                                    <button
+                                        pButton
+                                        icon="pi pi-times"
+                                        (click)="resetFunction(options)"
+                                        severity="secondary"
+                                    ></button>
+                                </div>
+                            </ng-template>
+                            <ng-template
+                                pTemplate="selectedItem"
+                                let-selectedOption
+                            >
+                                <div class="flex align-items-center gap-2">
+                                    <div>{{ selectedOption?.dni }}</div>
+                                </div>
+                            </ng-template>
+                            <ng-template let-customer pTemplate="item">
+                                <div class="flex align-items-center gap-2">
+                                    <i class="pi pi-user"></i>
+                                    <div>{{ customer?.name }}</div>
+                                </div>
+                            </ng-template>
+                        </p-dropdown>
                         <button
                             pButton
                             label="Añadir cliente"
@@ -556,19 +642,15 @@
 
                     <!-- Product description -->
                     <div class="field">
-                        <label for="productDesc">Descripción de producto</label>
+                        <label for="productDesc">Detalle</label>
                         <input
                             type="text"
                             pInputText
                             id="productDesc"
-                            [(ngModel)]="saleDto.productDescription"
-                            [value]="product.productName || ''"
+                            [(ngModel)]="saleDto.detail"
+                            [value]="product.name || ''"
                             required
                             autofocus
-                            [ngClass]="{
-                                'ng-invalid ng-dirty':
-                                    submitted && !saleDto.productDescription
-                            }"
                         />
                     </div>
 
@@ -614,40 +696,18 @@
                         >
                     </div>
 
-                    <!-- Spot -->
-                    <div class="field">
-                        <label for="spot">Precio al contado</label>
-                        <input
-                            type="number"
-                            pInputText
-                            id="spot"
-                            [(ngModel)]="saleDto.spot"
-                            [value]="product.spotPrice"
-                            required
-                            autofocus
-                        />
-                    </div>
-
-                    <!-- Fee -->
+                    <!-- Precio -->
                     <div class="field">
                         <label for="amount">Cuota</label>
                         <input
                             type="number"
                             pInputText
                             id="amount"
-                            [(ngModel)]="saleDto.fee"
-                            [value]="product.installmentPrice"
+                            [(ngModel)]="saleDto.price"
+                            [value]="product.price"
                             required
                             autofocus
-                            [ngClass]="{
-                                'ng-invalid ng-dirty': submitted && !saleDto.fee
-                            }"
                         />
-                        <small
-                            class="ng-dirty ng-invalid"
-                            *ngIf="submitted && !saleDto.fee"
-                            >La cuota es requerida.</small
-                        >
                     </div>
 
                     <!-- Total fees -->
@@ -666,11 +726,6 @@
                                     submitted && !saleDto.totalFees
                             }"
                         />
-                        <small
-                            class="ng-dirty ng-invalid"
-                            *ngIf="submitted && !saleDto.totalFees"
-                            >El totalFees es requerido.</small
-                        >
                     </div>
 
                     <!-- Fees collected -->
@@ -713,7 +768,6 @@
                         <label for="date">Fecha</label>
                         <p-calendar
                             [showIcon]="true"
-                            [locale]="demo?.es"
                             inputId="icon"
                             [(ngModel)]="saleDto.date"
                             [showTime]="true"
@@ -784,7 +838,7 @@
             <p-dialog
                 [(visible)]="dialogForSeeProduct"
                 [style]="{ width: '450px' }"
-                header="Venta | {{ product?.productName }}"
+                header="Venta | {{ product?.name }}"
                 [modal]="true"
                 class="p-fluid"
             >
@@ -810,22 +864,12 @@
                         />
                     </div>
                     <div class="field">
-                        <label for="spotP">Precio al contado</label>
+                        <label for="price">Precio</label>
                         <input
-                            id="spotP"
+                            id="price"
                             type="text"
                             pInputText
-                            placeholder="{{ product?.spotPrice }}"
-                            readonly
-                        />
-                    </div>
-                    <div class="field">
-                        <label for="installmentP">Precio por cuota</label>
-                        <input
-                            id="installmentP"
-                            type="text"
-                            pInputText
-                            placeholder="{{ product?.installmentPrice }}"
+                            placeholder="{{ product?.price }}"
                             readonly
                         />
                     </div>
@@ -850,12 +894,12 @@
                         />
                     </div>
                     <div class="field">
-                        <label for="descP">Descripción</label>
+                        <label for="descP">Detalle</label>
                         <input
                             id="descP"
                             type="text"
                             pInputText
-                            placeholder="{{ product?.description }}"
+                            placeholder="{{ product?.detail }}"
                             readonly
                         />
                     </div>

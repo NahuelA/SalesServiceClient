@@ -157,14 +157,7 @@
                             <div
                                 class="flex justify-content-between align-items-center"
                             >
-                                Precio al contado
-                            </div>
-                        </th>
-                        <th style="min-width: 12rem">
-                            <div
-                                class="flex justify-content-between align-items-center"
-                            >
-                                Precio por cuota
+                                Precio
                             </div>
                         </th>
                         <th style="min-width: 12rem">
@@ -174,27 +167,6 @@
                                 Cantidad de cuotas
                             </div>
                         </th>
-                        <th style="min-width: 12rem">
-                            <div
-                                class="flex justify-content-between align-items-center"
-                            >
-                                Descripción
-                            </div>
-                        </th>
-                        <!-- <th style="min-width: 8rem">
-                            <div
-                                class="flex justify-content-between align-items-center"
-                            >
-                                Fecha
-                                <p-columnFilter
-                                    field="date"
-                                    placeholder="Fecha"
-                                    display="menu"
-                                    type="date"
-                                >
-                                </p-columnFilter>
-                            </div>
-                        </th> -->
                         <th style="min-width: 8rem">
                             <div
                                 class="flex justify-content-between align-items-center"
@@ -243,25 +215,19 @@
                             ></button>
                         </td>
                         <td>
-                            {{ product?.productName }}
+                            {{ product?.name }}
                         </td>
                         <td>
-                            {{ product?.barcode }}
+                            {{ product?.code }}
                         </td>
                         <td>
                             {{ product?.category }}
                         </td>
                         <td>
-                            {{ product?.spotPrice }}
-                        </td>
-                        <td>
-                            {{ product?.installmentPrice }}
+                            {{ product?.price }}
                         </td>
                         <td>
                             {{ product?.totalFees }}
-                        </td>
-                        <td>
-                            {{ product?.description }}
                         </td>
                         <td>
                             {{ product?.stock }}
@@ -304,19 +270,10 @@
                             type="text"
                             pInputText
                             id="name"
-                            [(ngModel)]="product.productName"
+                            [(ngModel)]="product.name"
                             required
                             autofocus
-                            [ngClass]="{
-                                'ng-invalid ng-dirty':
-                                    submitted && !product.productName
-                            }"
                         />
-                        <small
-                            class="ng-dirty ng-invalid"
-                            *ngIf="submitted && !product.productName"
-                            >El nombre es requerido.</small
-                        >
                     </div>
                     <!-- Code -->
                     <div class="field">
@@ -325,19 +282,10 @@
                             type="text"
                             pInputText
                             id="code"
-                            [(ngModel)]="product.barcode"
+                            [(ngModel)]="product.code"
                             required
                             autofocus
-                            [ngClass]="{
-                                'ng-invalid ng-dirty':
-                                    submitted && !product.barcode
-                            }"
                         />
-                        <small
-                            class="ng-dirty ng-invalid"
-                            *ngIf="submitted && !product.barcode"
-                            >El código es requerido.</small
-                        >
                     </div>
                     <!-- Category -->
                     <div class="field">
@@ -371,40 +319,19 @@
                             </ng-template>
                         </p-dropdown>
                     </div>
-                    <!-- spotPrice -->
+                    <!-- Price -->
                     <div class="field">
-                        <label for="spotPrice">Precio al contado</label>
+                        <label for="price">Precio</label>
                         <input
                             type="number"
                             pInputText
-                            id="spotPrice"
-                            [(ngModel)]="product.spotPrice"
+                            id="price"
+                            [(ngModel)]="product.price"
                             required
                             autofocus
                             [ngClass]="{
                                 'ng-invalid ng-dirty':
-                                    submitted && !product.spotPrice
-                            }"
-                        />
-                        <small
-                            class="ng-dirty ng-invalid"
-                            *ngIf="submitted && !product.spotPrice"
-                            >El precio es requerido.</small
-                        >
-                    </div>
-                    <!-- installmentPrice -->
-                    <div class="field">
-                        <label for="installmentPrice">Precio por cuota</label>
-                        <input
-                            type="number"
-                            pInputText
-                            id="installmentPrice"
-                            [(ngModel)]="product.installmentPrice"
-                            required
-                            autofocus
-                            [ngClass]="{
-                                'ng-invalid ng-dirty':
-                                    submitted && !product.installmentPrice
+                                    submitted && !product.price
                             }"
                         />
                         <small
@@ -431,19 +358,6 @@
                             }"
                         />
                     </div>
-                    <!-- description -->
-                    <div class="field">
-                        <label for="description">Descripción</label>
-                        <textarea
-                            id="description"
-                            pInputTextarea
-                            [(ngModel)]="product.description"
-                            required
-                            rows="3"
-                            maxlength="500"
-                            cols="20"
-                        ></textarea>
-                    </div>
                     <!-- quantity -->
                     <div class="field">
                         <label for="stock">Cantidad</label>
@@ -454,16 +368,7 @@
                             [(ngModel)]="product.stock"
                             required
                             autofocus
-                            [ngClass]="{
-                                'ng-invalid ng-dirty':
-                                    submitted && !product.stock
-                            }"
                         />
-                        <small
-                            class="ng-dirty ng-invalid"
-                            *ngIf="submitted && !product.stock"
-                            >La cantidad es requerida.</small
-                        >
                     </div>
                 </ng-template>
 
@@ -503,19 +408,10 @@
                             type="text"
                             pInputText
                             id="name"
-                            [(ngModel)]="product.productName"
+                            [(ngModel)]="product.name"
                             required
                             autofocus
-                            [ngClass]="{
-                                'ng-invalid ng-dirty':
-                                    submitted && !product.productName
-                            }"
                         />
-                        <small
-                            class="ng-dirty ng-invalid"
-                            *ngIf="submitted && !product.productName"
-                            >El nombre es requerido.</small
-                        >
                     </div>
                     <!-- Code -->
                     <div class="field">
@@ -524,19 +420,10 @@
                             type="text"
                             pInputText
                             id="code"
-                            [(ngModel)]="product.barcode"
+                            [(ngModel)]="product.code"
                             required
                             autofocus
-                            [ngClass]="{
-                                'ng-invalid ng-dirty':
-                                    submitted && !product.barcode
-                            }"
                         />
-                        <small
-                            class="ng-dirty ng-invalid"
-                            *ngIf="submitted && !product.barcode"
-                            >El código es requerido.</small
-                        >
                     </div>
                     <!-- Category -->
                     <div class="field">
@@ -570,45 +457,24 @@
                             </ng-template>
                         </p-dropdown>
                     </div>
-                    <!-- spotPrice -->
+                    <!-- Price -->
                     <div class="field">
-                        <label for="spotPrice">Precio al contado</label>
+                        <label for="price">Precio</label>
                         <input
                             type="number"
                             pInputText
-                            id="spotPrice"
-                            [(ngModel)]="product.spotPrice"
+                            id="price"
+                            [(ngModel)]="product.price"
                             required
                             autofocus
                             [ngClass]="{
                                 'ng-invalid ng-dirty':
-                                    submitted && !product.spotPrice
+                                    submitted && !product.price
                             }"
                         />
                         <small
                             class="ng-dirty ng-invalid"
-                            *ngIf="submitted && !product.spotPrice"
-                            >El precio es requerido.</small
-                        >
-                    </div>
-                    <!-- installmentPrice -->
-                    <div class="field">
-                        <label for="installmentPrice">Precio por cuota</label>
-                        <input
-                            type="number"
-                            pInputText
-                            id="installmentPrice"
-                            [(ngModel)]="product.installmentPrice"
-                            required
-                            autofocus
-                            [ngClass]="{
-                                'ng-invalid ng-dirty':
-                                    submitted && !product.installmentPrice
-                            }"
-                        />
-                        <small
-                            class="ng-dirty ng-invalid"
-                            *ngIf="submitted && !product.installmentPrice"
+                            *ngIf="submitted && !product.price"
                             >El precio de la cuota es requerido.</small
                         >
                     </div>
@@ -629,19 +495,6 @@
                                     submitted && !product?.totalFees
                             }"
                         />
-                    </div>
-                    <!-- description -->
-                    <div class="field">
-                        <label for="description">Descripción</label>
-                        <textarea
-                            id="description"
-                            pInputTextarea
-                            [(ngModel)]="product.description"
-                            required
-                            rows="3"
-                            maxlength="500"
-                            cols="20"
-                        ></textarea>
                     </div>
                     <!-- quantity -->
                     <div class="field">
@@ -700,7 +553,7 @@
                     ></i>
                     <span *ngIf="product"
                         >Estás seguro que quieres eliminar este registro :
-                        <b>{{ product.productName }}</b
+                        <b>{{ product.name }}</b
                         >?</span
                     >
                 </div>

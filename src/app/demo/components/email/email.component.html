@@ -1,0 +1,248 @@
+<div class="grid">
+    <div class="col-12">
+        <div class="grid" style="justify-content: center">
+            <p-toast />
+            <div class="card p-fluid email-container">
+                <div style="display: grid; grid-template-columns: 40% 60%">
+                    <div style="display: flex">
+                        <h5 [style]="{ margin: 'auto 0' }">Envío de correos</h5>
+
+                        <div class="my-2 ml-2">
+                            <p-button
+                                pRipple
+                                severity="secondary"
+                                text="true"
+                                rounded="true"
+                                (click)="showConfigEmailDialog()"
+                            >
+                                <i
+                                    class="pi pi-cog"
+                                    style="
+                                        font-size: 1.5rem;
+                                        margin: auto;
+                                        color: #ccc;
+                                    "
+                                ></i>
+                            </p-button>
+                        </div>
+                    </div>
+
+                    <!-- Info -->
+                    <div
+                        class="my-2"
+                        style="display: grid; justify-content: right"
+                    >
+                        <p-button
+                            pRipple
+                            severity="secondary"
+                            text="true"
+                            rounded="true"
+                            (click)="showHelpDialog()"
+                        >
+                            <i
+                                class="pi pi-question-circle"
+                                style="
+                                    font-size: 1.5rem;
+                                    margin: auto;
+                                    color: #ccc;
+                                "
+                            ></i>
+                        </p-button>
+                    </div>
+                </div>
+
+                <!-- Subject -->
+                <div class="field">
+                    <label htmlFor="subject">Asunto:</label>
+                    <p-inputGroup>
+                        <p-inputGroupAddon>
+                            <i class="pi pi-info-circle"></i>
+                        </p-inputGroupAddon>
+                        <input
+                            pInputText
+                            type="text"
+                            [(ngModel)]="email.subject"
+                            placeholder="Asunto"
+                        />
+                    </p-inputGroup>
+                </div>
+
+                <!-- Message -->
+                <div class="field">
+                    <label htmlFor="message">Mensaje:</label>
+                    <p-inputGroup>
+                        <p-inputGroupAddon>
+                            <i class="pi pi-envelope"></i>
+                        </p-inputGroupAddon>
+                        <textarea
+                            pInputText
+                            id="message"
+                            [(ngModel)]="email.message"
+                        ></textarea>
+                    </p-inputGroup>
+                </div>
+
+                <!-- Scheduled -->
+                <div class="field">
+                    <label htmlFor="scheduled">Programar para:</label>
+                    <p-calendar
+                        [(ngModel)]="email.scheduled"
+                        [iconDisplay]="'input'"
+                        id="scheduled"
+                        [showIcon]="true"
+                        [showTime]="true"
+                    />
+                </div>
+
+                <!-- Attachment -->
+                <div class="field">
+                    <label htmlFor="attach">Ficheros:</label>
+                    <p-inputGroup>
+                        <p-inputGroupAddon>
+                            <i class="pi pi-file"></i>
+                        </p-inputGroupAddon>
+                        <input
+                            (change)="onFileSelected($event)"
+                            style="width: 60%"
+                            id="attach"
+                            pButton
+                            type="file"
+                            accept="application/pdf"
+                        />
+                    </p-inputGroup>
+                </div>
+
+                <!-- To -->
+                <div class="field">
+                    <label htmlFor="age1">Enviar a:</label>
+                    <p-multiSelect
+                        [options]="customers"
+                        [(ngModel)]="email.customers"
+                        [filter]="true"
+                        optionLabel="email"
+                        display="chip"
+                        placeholder="Seleccionar clientes"
+                    >
+                        <ng-template let-customer pTemplate="item">
+                            <div class="flex align-items-center gap-2">
+                                <i class="pi pi-user"></i>
+                                <div>
+                                    {{ customer.name }} ({{ customer.email }})
+                                </div>
+                            </div>
+                        </ng-template>
+                    </p-multiSelect>
+                </div>
+
+                <div>
+                    <p-button
+                        label="Enviar correos"
+                        icon="pi pi-check"
+                        (onClick)="send()"
+                        [loading]="loading"
+                    />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add email -->
+    <p-dialog
+        [(visible)]="configEmailDialog"
+        [style]="{ width: '450px' }"
+        header="Configurar emisor de correo"
+        [modal]="true"
+        class="p-fluid"
+    >
+        <ng-template pTemplate="content">
+            <!-- Email -->
+            <div class="field">
+                <label for="name">Correo</label>
+                <input
+                    type="text"
+                    pInputText
+                    id="name"
+                    [(ngModel)]="emailConfigurationDto.email"
+                    required
+                    autofocus
+                />
+            </div>
+
+            <!-- Password -->
+            <div class="field">
+                <label for="name">Contraseña</label>
+                <p-password
+                    [(ngModel)]="emailConfigurationDto.password"
+                    [feedback]="false"
+                    [toggleMask]="true"
+                />
+            </div>
+        </ng-template>
+
+        <ng-template pTemplate="footer">
+            <button
+                pButton
+                pRipple
+                label="Cancelar"
+                icon="pi pi-times"
+                class="p-button-text"
+                (click)="closeConfigEmailDialog()"
+            ></button>
+            <button
+                pButton
+                pRipple
+                label="Guardar"
+                icon="pi pi-check"
+                class="p-button-text"
+                (click)="configEmail()"
+                [loading]="emailConfigLoading"
+            ></button>
+        </ng-template>
+    </p-dialog>
+
+    <p-dialog
+        [(visible)]="helpDialog"
+        [style]="{ width: '450px' }"
+        header="Como configurar un correo como emisor"
+        [modal]="true"
+        class="p-fluid"
+    >
+        <ng-template pTemplate="content">
+            <!-- Help -->
+            <div class="field">
+                <p style="font-size: 16px">
+                    Para añadir un correo electrónico debes ir a la sección de
+                    <a href="https://myaccount.google.com/" target="_blank"
+                        >Administrar cuenta de google</a
+                    >
+                    > verificación en 2 pasos >
+                    <a
+                        href="https://myaccount.google.com/apppasswords?pli=1&rapt=AEjHL4P2Q-car91YR2qbYAPXif5kL-m6p_Qyhae4-Tyup0Tch1iCfx94KJRKaxVjOcT9ABsBYISYbit3WISX2K88J2dHJ4TOc4ONRk45xnV3JTXOZDzaUJU"
+                        target="_blank"
+                        >contraseñas de aplicaciones</a
+                    >.
+                </p>
+
+                <p style="font-size: 16px">
+                    Allí deberas crear una contraseña para poder autenticarte en
+                    Sales service y enviar correos a tus clientes.
+                    <b
+                        >Debes guardar tu contraseña en algún lugar ya que
+                        Google solo te deja copiarla una sola vez.</b
+                    >
+                </p>
+            </div>
+        </ng-template>
+
+        <ng-template pTemplate="footer">
+            <button
+                pButton
+                pRipple
+                label="Cerrar"
+                icon="pi pi-times"
+                class="p-button-text"
+                (click)="closeHelpDialog()"
+            ></button>
+        </ng-template>
+    </p-dialog>
+</div>

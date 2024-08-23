@@ -1,4 +1,102 @@
 <div class="grid">
+    <div class="responsiveCards col-12">
+        <!-- Sales overview -->
+        <div class="col-12 lg:col-6 xl:col-3">
+            <div class="card mb-0">
+                <div class="flex justify-content-between mb-3">
+                    <div>
+                        <span class="block text-500 font-medium mb-3"
+                            >Ventas</span
+                        >
+                        <div class="text-900 font-medium text-xl">
+                            {{ saleOverview?.totalSales }}
+                        </div>
+                    </div>
+                    <div
+                        class="flex align-items-center justify-content-center bg-blue-100 border-round"
+                        [ngStyle]="{ width: '2.5rem', height: '2.5rem' }"
+                    >
+                        <i
+                            class="pi pi-shopping-cart text-gray-500 text-xl"
+                        ></i>
+                    </div>
+                </div>
+                <span
+                    [ngClass]="{
+                        'font-medium': true,
+                        'text-green-500': saleOverview.porcent >= 0,
+                        'text-red-500': saleOverview.porcent < 0
+                    }"
+                    >% {{ saleOverview?.porcent }}
+                </span>
+                <span class="text-500">desde el mes pasado</span>
+            </div>
+        </div>
+
+        <!-- Customer overview -->
+        <div class="col-12 lg:col-6 xl:col-3">
+            <div class="card mb-0">
+                <div class="flex justify-content-between mb-3">
+                    <div>
+                        <span class="block text-500 font-medium mb-3"
+                            >Clientes</span
+                        >
+                        <div class="text-900 font-medium text-xl">
+                            {{ customerOverview?.totalCustomers }}
+                        </div>
+                    </div>
+                    <div
+                        class="flex align-items-center justify-content-center bg-blue-100 border-round"
+                        [ngStyle]="{ width: '2.5rem', height: '2.5rem' }"
+                    >
+                        <i class="pi pi-user text-gray-500 text-xl"></i>
+                    </div>
+                </div>
+                <span
+                    [ngClass]="{
+                        'font-medium': true,
+                        'text-green-500': customerOverview.porcent >= 0,
+                        'text-red-500': customerOverview.porcent < 0
+                    }"
+                    >% {{ customerOverview?.porcent }}
+                </span>
+                <span class="text-500">desde el mes pasado</span>
+            </div>
+        </div>
+
+        <!-- Gross revenue -->
+        <div class="col-12 lg:col-6 xl:col-3">
+            <div class="card mb-0">
+                <div class="flex justify-content-between mb-3">
+                    <div>
+                        <span class="block text-500 font-medium mb-3"
+                            >Dinero recaudado bruto</span
+                        >
+                        <div class="text-900 font-medium text-xl">
+                            ${{ grossRevenueOverview.revenue }}
+                        </div>
+                    </div>
+                    <div
+                        class="flex align-items-center justify-content-center bg-blue-100 border-round"
+                        [ngStyle]="{ width: '2.5rem', height: '2.5rem' }"
+                    >
+                        <i class="pi pi-dollar text-gray-500 text-xl"></i>
+                    </div>
+                </div>
+                <span
+                    [ngClass]="{
+                        'font-medium': true,
+                        'text-green-500': grossRevenueOverview.porcent >= 0,
+                        'text-red-500': grossRevenueOverview.porcent < 0,
+                    }"
+                    >% {{ grossRevenueOverview.porcent }}
+                </span>
+                <span class="text-500">desde el mes pasado</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent sales -->
     <div class="col-12 xl:col-6">
         <!-- Ventas recientes -->
         <div class="card">
@@ -22,7 +120,8 @@
                             <p-sortIcon field="installment"></p-sortIcon>
                         </th>
                         <th pSortableColumn="amount">
-                            Cantidad <p-sortIcon field="amount"></p-sortIcon>
+                            Cantidad
+                            <p-sortIcon field="amount"></p-sortIcon>
                         </th>
                         <th>Detalles</th>
                     </tr>
@@ -61,7 +160,7 @@
         <p-dialog
             [(visible)]="dialogForSeeSale"
             [style]="{ width: '450px' }"
-            header="Venta | {{ sale.productDescription }}"
+            header="Venta | {{ sale.detail }}"
             [modal]="true"
             class="p-fluid"
         >
@@ -72,7 +171,7 @@
                         id="cname"
                         type="text"
                         pInputText
-                        placeholder="{{ sale?.client?.name }}"
+                        placeholder="{{ sale?.customer?.name }}"
                         readonly
                     />
                 </div>
@@ -151,7 +250,7 @@
         </p-dialog>
     </div>
 
-    <!-- Overview -->
+    <!-- Charts -->
     <div class="col-12 xl:col-6">
         <div class="card">
             <h5>Venta mensual</h5>
@@ -162,18 +261,18 @@
             ></p-chart>
         </div>
         <div class="card">
-            <h5>Cobranza mensual</h5>
+            <h5>Ventas al contado</h5>
             <p-chart
                 type="line"
-                [data]="monthlyCollection"
+                [data]="spotSalesData"
                 [options]="chartOptions"
             ></p-chart>
         </div>
         <div class="card">
-            <h5>Ganancia total en ventas</h5>
+            <h5>Cobranza mensual</h5>
             <p-chart
                 type="line"
-                [data]="profit"
+                [data]="monthlyCollection"
                 [options]="chartOptions"
             ></p-chart>
         </div>

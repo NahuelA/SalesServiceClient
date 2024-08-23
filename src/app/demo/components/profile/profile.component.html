@@ -1,0 +1,163 @@
+<p-toast />
+<div class="card pt-0 pb-4 profile-responsive">
+    <!-- Update btn -->
+    <div style="display: grid; width: 100%; justify-content: right">
+        <p-button
+            class="mt-3"
+            icon="pi pi-user-edit"
+            (onClick)="showUpdateProfileDialog()"
+        />
+    </div>
+
+    <div
+        class="mb-3"
+        style="
+            background-image: url('assets/layout/images/white-logo.png');
+            background-size: cover;
+            border-radius: 50%;
+            border: solid 1px #ccc;
+            width: 200px;
+            height: 200px;
+            margin: auto;
+        "
+    ></div>
+
+    <!-- EnterpriseName -->
+    <p-inputGroup>
+        <p-inputGroupAddon>
+            <i class="pi pi-user"></i>
+        </p-inputGroupAddon>
+        <input
+            pInputText
+            id="enterpriseName"
+            readonly
+            [value]="profile?.enterpriseName"
+        />
+    </p-inputGroup>
+
+    <!-- Cuit -->
+    <p-inputGroup class="mt-3">
+        <p-inputGroupAddon>
+            <i class="pi pi-hashtag"></i>
+        </p-inputGroupAddon>
+        <input pInputText id="cuit" readonly [value]="profile?.cuit" />
+    </p-inputGroup>
+
+    <!-- Email -->
+    <p-inputGroup class="mt-3">
+        <p-inputGroupAddon>
+            <i class="pi pi-at"></i>
+        </p-inputGroupAddon>
+        <input pInputText id="email" readonly [value]="profile?.email" />
+    </p-inputGroup>
+
+    <!-- Phone -->
+    <p-inputGroup class="mt-3">
+        <p-inputGroupAddon>
+            <i class="pi pi-phone"></i>
+        </p-inputGroupAddon>
+        <input
+            pInputText
+            id="phoneNumber"
+            readonly
+            [value]="profile?.phoneNumber"
+        />
+    </p-inputGroup>
+
+    <!-- Address -->
+    <p-inputGroup class="mt-3">
+        <p-inputGroupAddon>
+            <i class="pi pi-compass"></i>
+        </p-inputGroupAddon>
+        <input pInputText id="address" readonly [value]="profile?.address" />
+    </p-inputGroup>
+</div>
+
+<!-- Update profile -->
+<p-dialog
+    [(visible)]="updateProfileDialog"
+    [style]="{ width: '450px' }"
+    header="Actualizar perfil"
+    [modal]="true"
+    class="p-fluid"
+>
+    <ng-template pTemplate="content">
+        <!-- Enterprise name -->
+        <div class="field">
+            <!-- EnterpriseName -->
+            <p-inputGroup>
+                <p-inputGroupAddon>
+                    <i class="pi pi-user"></i>
+                </p-inputGroupAddon>
+                <input
+                    pInputText
+                    id="enterpriseName"
+                    [(ngModel)]="profile.enterpriseName"
+                />
+            </p-inputGroup>
+        </div>
+
+        <!-- Cuit -->
+        <div class="field">
+            <p-inputGroup class="mt-3">
+                <p-inputGroupAddon>
+                    <i class="pi pi-hashtag"></i>
+                </p-inputGroupAddon>
+                <input pInputText id="cuit" [(ngModel)]="profile.cuit" />
+            </p-inputGroup>
+        </div>
+
+        <!-- Email -->
+        <div class="field">
+            <p-inputGroup class="mt-3">
+                <p-inputGroupAddon>
+                    <i class="pi pi-at"></i>
+                </p-inputGroupAddon>
+                <input pInputText id="email" [(ngModel)]="profile.email" />
+            </p-inputGroup>
+        </div>
+
+        <!-- Phone -->
+        <div class="field">
+            <p-inputGroup class="mt-3">
+                <p-inputGroupAddon>
+                    <i class="pi pi-phone"></i>
+                </p-inputGroupAddon>
+                <input
+                    pInputText
+                    id="phoneNumber"
+                    [(ngModel)]="profile.phoneNumber"
+                />
+            </p-inputGroup>
+        </div>
+
+        <!-- Address -->
+        <div class="field">
+            <p-inputGroup class="mt-3">
+                <p-inputGroupAddon>
+                    <i class="pi pi-compass"></i>
+                </p-inputGroupAddon>
+                <input pInputText id="address" [(ngModel)]="profile.address" />
+            </p-inputGroup>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button
+            pButton
+            pRipple
+            label="Cancelar"
+            icon="pi pi-times"
+            class="p-button-text"
+            (click)="closeUpdateProfileDialog()"
+        ></button>
+        <button
+            pButton
+            pRipple
+            label="Actualizar"
+            icon="pi pi-check"
+            class="p-button-text"
+            (click)="update()"
+        ></button>
+    </ng-template>
+</p-dialog>

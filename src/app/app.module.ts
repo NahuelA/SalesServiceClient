@@ -5,7 +5,12 @@ import { AppRoutingModule } from "./app-routing.module";
 import { AppLayoutModule } from "./layout/app.layout.module";
 import { ProductService } from "./demo/service/product.service";
 import { CustomerService } from "./demo/service/customer.service";
-import { HttpClient, HttpClientModule } from "@angular/common/http";
+import {
+    HttpClient,
+    HttpClientModule,
+    provideHttpClient,
+    withInterceptors,
+} from "@angular/common/http";
 import { FormsModule } from "@angular/forms";
 import { BrowserModule } from "@angular/platform-browser";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
@@ -19,8 +24,11 @@ import { ButtonModule } from "primeng/button";
 import { ConfirmPopupModule } from "primeng/confirmpopup";
 import { EmployeeService } from "./demo/service/employee.service";
 import { SaleService } from "./demo/service/sale.service";
-import { PaymentService } from "./demo/service/payment.service";
-import { ProfitService } from "./demo/service/profit.service";
+import { ReceiptService } from "./demo/service/receipt.service";
+import { authInterceptor } from "./demo/interceptors/auth.interceptor";
+import { AuthenticationService } from "./demo/service/authentication.service";
+import { EmailService } from "./demo/service/email.service";
+import { ReminderService } from "./demo/service/reminder.service";
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(httpClient: HttpClient) {
@@ -51,8 +59,11 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
         ProductService,
         EmployeeService,
         SaleService,
-        PaymentService,
-        ProfitService,
+        ReceiptService,
+        AuthenticationService,
+        EmailService,
+        ReminderService,
+        provideHttpClient(withInterceptors([authInterceptor])),
     ],
     bootstrap: [AppComponent],
 })

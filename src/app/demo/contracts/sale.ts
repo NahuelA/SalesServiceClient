@@ -3,19 +3,19 @@ import { Employee } from "./employee";
 import { Product } from "./product";
 
 export interface Sale {
-    saleId?: number;
-    productId?: number;
-    clientId?: number;
-    employeeId?: number;
+    saleId?: string;
+    productId?: string;
+    customerId?: string;
+    employeeId?: string;
     guarantorDni?: number;
     guarantorName?: string;
     guarantorAddress?: string;
-    productDescription?: string;
+    detail?: string;
     code?: string;
 
     // Mapped instances
     product?: Product;
-    client?: Customer;
+    customer?: Customer;
     employee?: Employee;
 
     // Dates
@@ -24,9 +24,7 @@ export interface Sale {
     date?: Date;
 
     amount?: number;
-    spot?: number;
-    fee?: number;
+    price?: number;
     feesCollected?: number;
     totalFees?: number;
-    timesThePaymentDateWasChanged?: number;
 }

@@ -16,10 +16,11 @@ import { ActivatedRoute, Params } from "@angular/router";
 import { Subscription, debounceTime } from "rxjs";
 import { CustomerService } from "../../service/customer.service";
 import { LayoutService } from "src/app/layout/service/app.layout.service";
-import { ProfitService } from "../../service/profit.service";
 import { EmployeeService } from "../../service/employee.service";
 import { Employee } from "../../contracts/employee";
 import { ProductService } from "../../service/product.service";
+import { AnalyticsService } from "../../service/analytics.service";
+import { DropdownFilterOptions } from "primeng/dropdown";
 
 @Component({
     templateUrl: "./sale.component.html",
@@ -43,6 +44,13 @@ export class SaleComponent implements OnInit, OnDestroy {
     employee: Employee = {};
     addCustomer: Customer = {};
     product: Product = {};
+    customers: Customer[] | undefined;
+    employees: Employee[] | undefined;
+
+    selectedCustomer: Customer | undefined;
+    selectedEmployee: Employee | undefined;
+
+    filterValue: string | undefined = "";
 
     submitted: boolean = false;
     existCustomerBool: boolean = true;
@@ -96,7 +104,7 @@ export class SaleComponent implements OnInit, OnDestroy {
         private _employeeService: EmployeeService,
         private _productService: ProductService,
         private _route: ActivatedRoute,
-        private profitService: ProfitService,
+        private analyticsService: AnalyticsService,
         public layoutService: LayoutService
     ) {
         this.subscription = this.layoutService.configUpdate$
@@ -117,13 +125,33 @@ export class SaleComponent implements OnInit, OnDestroy {
         this._salesService.refresh$.subscribe(() => {
             this._salesService.getBySeller(1000, this.dni).subscribe((sale) => {
                 this.sales = sale.data;
-                console.log(this.sales);
                 this.title =
                     this.employee?.name ||
                     `${this.employee?.name} no tiene ventas`;
                 this.loading = false;
             });
         });
+
+        this._customerService.get().subscribe({
+            next: (customer) => {
+                this.customers = customer.data;
+            },
+        });
+
+        this._employeeService.get().subscribe({
+            next: (employee) => {
+                this.employees = employee.data;
+            },
+        });
+    }
+
+    resetFunction(options: DropdownFilterOptions) {
+        options.reset();
+        this.filterValue = "";
+    }
+
+    customFilterFunction(event: KeyboardEvent, options: DropdownFilterOptions) {
+        options.filter(event);
     }
 
     loadSalesAndProfit() {
@@ -136,14 +164,13 @@ export class SaleComponent implements OnInit, OnDestroy {
         if (!isNaN(this.dni)) {
             this._salesService.getBySeller(1000, this.dni).subscribe((sale) => {
                 this.sales = sale.data;
-                console.log(this.sales);
 
                 this.title =
                     this.sales?.at(0)?.employee?.name || this.employee?.name;
                 this.loading = false;
             });
 
-            this.profitService
+            this.analyticsService
                 .getEmployeeOverview(this.dni, 2024)
                 .subscribe((data: any) => {
                     this.employeeCollectionR = data.result.profit;
@@ -163,7 +190,7 @@ export class SaleComponent implements OnInit, OnDestroy {
                 this.loading = false;
             });
 
-            this.profitService.get(2024).subscribe((data: any) => {
+            this.analyticsService.get(2024).subscribe((data: any) => {
                 this.employeeCollectionR = data.result.collect;
                 this.chartTitle = "Cobranza mensual general";
                 this.labelChart = "Dinero cobrado";
@@ -282,6 +309,7 @@ export class SaleComponent implements OnInit, OnDestroy {
             message: "Deseas marcar esta cuota como pagada?",
             icon: "pi pi-exclamation-circle",
             accept: () => {
+                console.log(this.nextPaymentDate);
                 this._salesService
                     .markAsPaid(
                         this.nextPaymentDate.saleId,
@@ -289,6 +317,13 @@ export class SaleComponent implements OnInit, OnDestroy {
                     )
                     .subscribe({
                         next: (markAsPaid) => {
+                            if (markAsPaid.info)
+                                this.messageService.add({
+                                    severity: "info",
+                                    summary: markAsPaid.message,
+                                    life: 10000,
+                                });
+
                             this.messageService.add({
                                 severity: "success",
                                 summary: markAsPaid.message,
@@ -298,6 +333,7 @@ export class SaleComponent implements OnInit, OnDestroy {
                             this.loadSalesAndProfit();
                         },
                         error: ({ error }: any) => {
+                            console.log(error);
                             this.messageService.add({
                                 severity: "error",
                                 summary: error.message,
@@ -323,10 +359,11 @@ export class SaleComponent implements OnInit, OnDestroy {
         this._productService.getByCode(this.saleDto.code).subscribe({
             next: (product) => {
                 this.product = product.data;
+                this.saleDto.detail = this.product.name;
+                this.saleDto.price = this.product.price;
+                this.saleDto.totalFees = this.product.totalFees;
                 this.existProduct = true;
                 this.existProductMsg = "";
-
-                console.log(product);
             },
             error: ({ error }) => {
                 this.product = {};
@@ -373,17 +410,16 @@ export class SaleComponent implements OnInit, OnDestroy {
         this.saleDto = {
             saleId: sale.saleId,
             employeeDni: sale.employee?.dni,
-            clientDni: sale.client?.dni,
+            customerDni: sale.customer?.dni,
             guarantorDni: sale.guarantorDni,
             guarantorName: sale.guarantorName,
             guarantorAddress: sale.guarantorAddress,
-            productDescription: sale.productDescription,
+            detail: sale.detail,
             code: sale.code,
             amount: sale.amount,
             paymentDate: sale.paymentDate,
             date: sale.date,
-            spot: sale.spot,
-            fee: sale.fee,
+            price: sale.price,
             feesCollected: sale.feesCollected,
             totalFees: sale.totalFees,
         };
@@ -429,11 +465,20 @@ export class SaleComponent implements OnInit, OnDestroy {
                 this.existCustomerMsg = customer.message;
             },
             error: ({ error }: any) => {
-                this.messageService.add({
-                    severity: "error",
-                    summary: error.message,
-                    life: 3000,
-                });
+                if (error.errors !== null)
+                    error?.errors?.map((x) => {
+                        this.messageService.add({
+                            severity: "error",
+                            summary: x.errorMessage,
+                            life: 4000,
+                        });
+                    });
+                else
+                    this.messageService.add({
+                        severity: "error",
+                        summary: error.message,
+                        life: 3000,
+                    });
                 this.existCustomerBool = false;
                 this.existCustomerMsg = error.message;
             },
@@ -467,13 +512,13 @@ export class SaleComponent implements OnInit, OnDestroy {
         this.dialog = true;
     }
 
-    openChangePaymentDateDialog(saleId: number) {
+    openChangePaymentDateDialog(saleId: string) {
         this.newPaymentDate = {};
         this.newPaymentDate.saleId = saleId;
         this.dialogForChangePaymentDate = true;
     }
 
-    openPaymentDateDialog(saleId: number, customerName: string) {
+    openPaymentDateDialog(saleId: string, customerName: string) {
         this.nextPaymentDate = {};
         this.nextPaymentDate.saleId = saleId;
         this.customer = { name: customerName };
@@ -538,6 +583,10 @@ export class SaleComponent implements OnInit, OnDestroy {
     saveProduct() {
         this.submitted = false;
         this.dialog = false;
+        this.saleDto.employeeDni = this.selectedEmployee?.dni;
+        this.saleDto.customerDni = this.selectedCustomer?.dni;
+
+        console.log(this.saleDto.detail);
 
         if (this.isOpenForEdit) {
             this._salesService
@@ -553,11 +602,20 @@ export class SaleComponent implements OnInit, OnDestroy {
                         this.isOpenForEdit = false;
                     },
                     error: ({ error }: any) => {
-                        this.messageService.add({
-                            severity: "error",
-                            summary: error.message,
-                            life: 3000,
-                        });
+                        if (error.errors !== null)
+                            error?.errors?.map((x) => {
+                                this.messageService.add({
+                                    severity: "error",
+                                    summary: x.errorMessage,
+                                    life: 4000,
+                                });
+                            });
+                        else
+                            this.messageService.add({
+                                severity: "error",
+                                summary: error.message,
+                                life: 3000,
+                            });
                     },
                 });
         } else {
@@ -571,11 +629,20 @@ export class SaleComponent implements OnInit, OnDestroy {
                     this.loadSalesAndProfit();
                 },
                 error: ({ error }: any) => {
-                    this.messageService.add({
-                        severity: "error",
-                        summary: error.message,
-                        life: 3000,
-                    });
+                    if (error.errors !== null)
+                        error?.errors?.map((x) => {
+                            this.messageService.add({
+                                severity: "error",
+                                summary: x.errorMessage,
+                                life: 4000,
+                            });
+                        });
+                    else
+                        this.messageService.add({
+                            severity: "error",
+                            summary: error.message,
+                            life: 3000,
+                        });
                 },
             });
         }

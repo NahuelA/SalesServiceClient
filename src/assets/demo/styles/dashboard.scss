@@ -1,0 +1,29 @@
+.graphic-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-content: center;
+}
+
+.responsiveCards {
+    display: flex;
+    justify-content: center;
+}
+
+.width-for-graphics {
+    width: 40rem;
+}
+
+@media (max-width: 1000px) {
+    .responsiveCards {
+        display: block;
+    }
+
+    .width-for-graphics {
+        width: 20rem;
+    }
+
+    .graphic-container {
+        grid-template-columns: 1fr;
+        justify-content: center;
+    }
+}

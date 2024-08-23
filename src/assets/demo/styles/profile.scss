@@ -1,0 +1,13 @@
+.profile-responsive {
+    display: grid;
+    width: 40%;
+    margin: auto;
+}
+
+@media (max-width: 780px) {
+    .profile-responsive {
+        display: grid;
+        justify-content: center;
+        width: 80%;
+    }
+}

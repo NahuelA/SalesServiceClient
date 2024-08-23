@@ -10,9 +10,7 @@ import { MessageService, ConfirmationService } from "primeng/api";
 import { EmployeeService } from "src/app/demo/service/employee.service";
 
 import { Employee } from "src/app/demo/contracts/employee";
-import { BaseResponse } from "../../contracts/response";
 import { Subscription } from "rxjs";
-import { em } from "@fullcalendar/core/internal-common";
 
 @Component({
     templateUrl: "./employee.component.html",
@@ -187,11 +185,20 @@ export class EmployeeComponent implements OnInit, OnDestroy {
             },
 
             error: ({ error }: any) => {
-                this.messageService.add({
-                    severity: "error",
-                    summary: error.message,
-                    life: 3000,
-                });
+                if (error.errors !== null)
+                    error?.errors?.map((x) => {
+                        this.messageService.add({
+                            severity: "error",
+                            summary: x.errorMessage,
+                            life: 4000,
+                        });
+                    });
+                else
+                    this.messageService.add({
+                        severity: "error",
+                        summary: error.message,
+                        life: 3000,
+                    });
             },
         });
     }

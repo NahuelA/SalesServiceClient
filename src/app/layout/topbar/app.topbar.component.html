@@ -11,13 +11,13 @@
 
     <a class="layout-topbar-logo" routerLink="">
         <img
+            style="width: 100px; height: 100px"
             src="assets/layout/images/{{
                 layoutService.config().colorScheme === 'light'
-                    ? 'logo-dark'
-                    : 'logo-white'
-            }}.svg"
+                    ? 'dark-logo'
+                    : 'white-logo'
+            }}.png"
             alt="logo"
         />
-        <span>Casa Julian Arcoíris</span>
     </a>
 </div>
