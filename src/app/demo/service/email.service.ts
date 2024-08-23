@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { BaseResponse } from "../contracts/Base/baseResponse";
 import { Observable, Subject } from "rxjs";
-import { localApi } from "src/app/layout/urlservice";
+import { apiUrl } from "src/app/layout/urlservice";
 import { EmailDto } from "../contracts/Dtos/emailDto";
 import { EmailConfigurationDto } from "../contracts/Dtos/emailConfigurationDto";
 
@@ -17,9 +17,7 @@ export class EmailService {
     }
 
     get(): Observable<BaseResponse<EmailDto[]>> {
-        const res = this.http.get<BaseResponse<EmailDto[]>>(
-            `${localApi}email/`
-        );
+        const res = this.http.get<BaseResponse<EmailDto[]>>(`${apiUrl}email/`);
         return res;
     }
 
@@ -30,7 +28,7 @@ export class EmailService {
         formData.append("emailDto", JSON.stringify(emailDto));
 
         const post = this.http.post<any>(
-            `${localApi}Email/sendMultiplesEmails/`,
+            `${apiUrl}Email/sendMultiplesEmails/`,
             formData
         );
         return post;
@@ -40,7 +38,7 @@ export class EmailService {
         emailConfigurationDto: EmailConfigurationDto
     ): Observable<BaseResponse<string>> {
         const config = this.http.post<BaseResponse<string>>(
-            `${localApi}email/configEmail`,
+            `${apiUrl}email/configEmail`,
             emailConfigurationDto
         );
         return config;

@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { BaseResponse } from "../contracts/Base/baseResponse";
 import { Observable, Subject, tap } from "rxjs";
-import { localApi } from "src/app/layout/urlservice";
+import { apiUrl } from "src/app/layout/urlservice";
 import { User } from "../contracts/user";
 import { LoginDto } from "../contracts/Dtos/loginDto";
 import { CookieService } from "ngx-cookie-service";
@@ -25,7 +25,7 @@ export class AuthenticationService {
         var tokenDto: TokenDto = { token: this.cookieService.get("token") };
 
         const post = this.http.post<boolean>(
-            `${localApi}account/tokenValidation`,
+            `${apiUrl}account/tokenValidation`,
             tokenDto
         );
         return post;
@@ -33,7 +33,7 @@ export class AuthenticationService {
 
     register(user: User): Observable<BaseResponse<string>> {
         const post = this.http
-            .post<BaseResponse<string>>(`${localApi}account/register`, user)
+            .post<BaseResponse<string>>(`${apiUrl}account/register`, user)
             .pipe(
                 tap(() => {
                     this._refresh$.next();
@@ -44,7 +44,7 @@ export class AuthenticationService {
 
     login(login: LoginDto): Observable<BaseResponse<TokenDto>> {
         const post = this.http.post<BaseResponse<TokenDto>>(
-            `${localApi}account/login`,
+            `${apiUrl}account/login`,
             login
         );
 

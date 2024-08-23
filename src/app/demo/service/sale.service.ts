@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { SaleDto } from "../contracts/Dtos/saleDto";
 import { BaseResponse } from "../contracts/Base/baseResponse";
 import { Observable, Subject } from "rxjs";
-import { localApi } from "src/app/layout/urlservice";
+import { apiUrl } from "src/app/layout/urlservice";
 import { Sale } from "../contracts/sale";
 
 @Injectable()
@@ -17,7 +17,7 @@ export class SaleService {
     }
 
     get(limit: number): Observable<BaseResponse<Sale[]>> {
-        const sale = this.http.get<BaseResponse<Sale[]>>(`${localApi}sale`);
+        const sale = this.http.get<BaseResponse<Sale[]>>(`${apiUrl}sale`);
         return sale;
     }
 
@@ -28,12 +28,12 @@ export class SaleService {
         let sale: any;
 
         if (dni === 0) {
-            sale = this.http.get<BaseResponse<Sale[]>>(`${localApi}sale`);
+            sale = this.http.get<BaseResponse<Sale[]>>(`${apiUrl}sale`);
             return sale;
         }
 
         sale = this.http.get<BaseResponse<Sale[]>>(
-            `${localApi}sale/filterByEmployees/${dni}`
+            `${apiUrl}sale/filterByEmployees/${dni}`
         );
 
         return sale;
@@ -41,7 +41,7 @@ export class SaleService {
 
     add(sale: SaleDto): Observable<BaseResponse<string>> {
         const newSale = this.http.post<BaseResponse<string>>(
-            `${localApi}sale`,
+            `${apiUrl}sale`,
             sale
         );
 
@@ -50,7 +50,7 @@ export class SaleService {
 
     delete(saleId: string): Observable<BaseResponse<string>> {
         const remove = this.http.delete<BaseResponse<string>>(
-            `${localApi}sale/${saleId}/`
+            `${apiUrl}sale/${saleId}/`
         );
 
         return remove;
@@ -58,7 +58,7 @@ export class SaleService {
 
     update(sale: SaleDto, saleId: string): Observable<BaseResponse<string>> {
         const newSale = this.http.put<BaseResponse<string>>(
-            `${localApi}sale/${saleId}`,
+            `${apiUrl}sale/${saleId}`,
             sale
         );
 
@@ -70,7 +70,7 @@ export class SaleService {
         nextPaymentDate: Date | string
     ): Observable<BaseResponse<string>> {
         const markAsPaid = this.http.put<BaseResponse<string>>(
-            `${localApi}sale/markAsPaid/${saleId}`,
+            `${apiUrl}sale/markAsPaid/${saleId}`,
             nextPaymentDate
         );
 
@@ -82,7 +82,7 @@ export class SaleService {
         date: Date | string
     ): Observable<BaseResponse<string>> {
         const changePaymentDate = this.http.put<BaseResponse<string>>(
-            `${localApi}sale/changePaymentDate/${saleId}`,
+            `${apiUrl}sale/changePaymentDate/${saleId}`,
             date
         );
         return changePaymentDate;

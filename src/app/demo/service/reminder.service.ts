@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { BaseResponse } from "../contracts/Base/baseResponse";
 import { Observable, Subject, tap } from "rxjs";
-import { localApi } from "src/app/layout/urlservice";
+import { apiUrl } from "src/app/layout/urlservice";
 import { ReminderDto } from "../contracts/Dtos/reminderDto";
 
 @Injectable()
@@ -11,7 +11,7 @@ export class ReminderService {
 
     sendReminder(reminder: ReminderDto): Observable<BaseResponse<string>> {
         const res = this.http.post<BaseResponse<string>>(
-            `${localApi}reminder/`,
+            `${apiUrl}reminder/`,
             reminder
         );
 
@@ -20,7 +20,7 @@ export class ReminderService {
 
     get(): Observable<BaseResponse<ReminderDto[]>> {
         const reminder = this.http.get<BaseResponse<ReminderDto[]>>(
-            `${localApi}reminder/`
+            `${apiUrl}reminder/`
         );
 
         return reminder;
